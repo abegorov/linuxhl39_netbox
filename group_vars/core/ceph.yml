@@ -1,0 +1,81 @@
+---
+ceph_bootstrap_host: '{{ groups["core"] | first }}'
+
+user_add_ceph:
+  ceph-admin:
+    create_home: true
+    home: /home/ceph-admin
+    password: '!'
+    update_password: on_create
+    shell: /bin/bash
+    system: false
+
+ceph_config:
+  /etc/sudoers.d/ceph-admin:
+    content: |
+      ceph-admin ALL=(ALL) NOPASSWD:ALL
+    mode: '0440'
+    validate: /usr/sbin/visudo -cf %s
+    notify: []
+  /etc/ceph/cluster-spec.yml:
+    content: |
+      {% for host in groups['core'] %}
+      {% set hvar = hostvars[host] %}
+      ---
+      service_type: host
+      hostname: {{ host }}
+      addr: {{ hvar.ip_address }}
+      labels:
+      - _admin
+      - mon
+      - mgr
+      - rgw
+      ...
+      {% endfor %}
+      ---
+      service_type: crash
+      placement:
+        host_pattern: '*'
+      ...
+      ---
+      service_type: mgr
+      placement:
+        label: mgr
+      ...
+      ---
+      service_type: mon
+      placement:
+        label: mon
+      ...
+      {% for host in groups['core'] %}
+      {% set hvar = hostvars[host] %}
+      ---
+      service_type: osd
+      service_id: {{ host | replace('-', '_') }}
+      placement:
+        hosts:
+        - {{ host }}
+      config:
+        osd_memory_target: 1073741824
+        osd_memory_target_autotune: false
+      spec:
+        data_devices:
+          all: true
+      ...
+      {% endfor %}
+      ---
+      service_type: rgw
+      service_id: default
+      placement:
+        label: rgw
+      networks:
+        - 10.130.0.0/24
+      config:
+        rgw_cache_enabled: true
+        rgw_cache_lru_size: 500
+        rgw_thread_pool_size: 16
+      spec:
+        rgw_frontend_type: beast
+        rgw_frontend_port: 8000
+      ...
+...

@@ -1,0 +1,9 @@
+---
+- name: Process file group
+  ansible.builtin.include_tasks: group.yml
+  loop: '{{ file_groups }}'
+  loop_control:
+    index_var: index
+    label: '{{ index }}'
+    loop_var: filegroup
+...

@@ -1,0 +1,15 @@
+---
+- name: Process configuration file options
+  vars:
+    section:
+      key: '{{ omit }}'
+      value: '{{ file.value.options | default({}) }}'
+  ansible.builtin.include_tasks: section.yml
+
+- name: Process configuration file sections
+  ansible.builtin.include_tasks: section.yml
+  loop: '{{ file.value.sections | default({}) | dict2items }}'
+  loop_control:
+    label: '{{ section.key }}'
+    loop_var: section
+...

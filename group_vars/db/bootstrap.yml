@@ -1,0 +1,11 @@
+---
+apt_packages_bootstrap:
+  - postgresql-common
+ini_config_bootstrap:
+  /etc/postgresql-common/createcluster.conf:
+    create: false
+    no_extra_spaces: false
+    options:
+      create_main_cluster: 'false'
+      ssl: 'off'
+...

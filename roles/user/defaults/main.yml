@@ -1,0 +1,10 @@
+---
+user_add: {}
+user_append: false
+user_create_home: false
+user_home: /nonexistent
+user_password: '*'
+user_shell: /sbin/nologin
+user_skeleton: /dev/null
+user_system: true
+...

@@ -1,0 +1,17 @@
+---
+- name: Upgrade apt packages
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    update_cache: true
+    upgrade: true
+  register: _apt_upgrade_status
+
+- name: Check if reboot is required
+  ansible.builtin.stat:
+    path: /var/run/needrestart
+  register: _apt_upgrade_reboot_required
+
+- name: Reboot if required by upgrade
+  ansible.builtin.reboot:
+  when: _apt_upgrade_reboot_required.stat.exists
+...

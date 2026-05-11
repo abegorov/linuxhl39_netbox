@@ -1,0 +1,6 @@
+---
+wait_for_connection_connect_timeout: 5
+wait_for_connection_delay: 0
+wait_for_connection_sleep: 1
+wait_for_connection_timeout: 600
+...

@@ -1,0 +1,10 @@
+---
+unarchive_cache: /var/cache/ansible_unarchive
+unarchive_dest: /usr/local/bin
+unarchive_urls: {}
+unarchive_extra_opts: [--wildcards, --strip-components=1]
+unarchive_owner: root
+unarchive_group: root
+unarchive_mode: '0755'
+unarchive_notify: []
+...

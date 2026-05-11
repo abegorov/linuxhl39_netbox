@@ -1,0 +1,8 @@
+---
+apt_packages_add: '{{ apt_packages_add_default + apt_packages_add_override }}'
+apt_packages_add_default:
+  - bash-completion
+  - chrony
+  - filebeat
+apt_packages_add_override: []
+...

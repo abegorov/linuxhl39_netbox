@@ -1,0 +1,12 @@
+---
+unarchive_urls: '{{ unarchive_urls_default |
+  combine(unarchive_urls_override) }}'
+unarchive_urls_override: {}
+unarchive_urls_default:
+  node_exporter.tar.gz:
+    checksum: >-
+      sha256:9f5ea48e5bc7b656f8a91a32e7d7deb89f70f73dabd0d974418aca15f37d6810
+    include: ['*/node_exporter']
+    url: "https://github.com/prometheus/node_exporter/releases/download/\
+      v1.11.1/node_exporter-1.11.1.linux-amd64.tar.gz"
+...

@@ -1,0 +1,18 @@
+---
+- name: Generate config files
+  ansible.builtin.copy:
+    content: '{{ item.value.content }}'
+    dest: '{{ item.key }}'
+    owner: '{{ item.value.owner | default(config_owner) |
+      default(omit, true) }}'
+    group: '{{ item.value.group | default(config_group) |
+      default(omit, true) }}'
+    mode: '{{ item.value.mode | default(config_mode) |
+      default(omit, true) }}'
+    validate: '{{ item.value.validate | default(omit, true) }}'
+  notify: '{{ item.value.notify | default(config_notify) |
+    default(omit, true) }}'
+  loop: '{{ config_content | ansible.builtin.dict2items }}'
+  loop_control:
+    label: '{{ item.key }}'
+...

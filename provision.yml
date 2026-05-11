@@ -1,0 +1,47 @@
+---
+- name: Bootstrap
+  hosts: all
+  become: true
+  gather_facts: false
+  roles:
+    - role: tls_ca
+      tags: [tls_ca]
+    - role: tls_certs
+      tags: [tls_certs]
+    - role: wait_for_connection
+      tags: [wait_for_connection]
+    - role: apt_sources
+      tags: [apt_sources]
+    - role: apt_upgrade
+      tags: [apt_upgrade]
+    - role: apt_packages
+      apt_packages_add: '{{ apt_packages_bootstrap }}'
+      tags: [apt_packages_bootstrap]
+    - role: ini_config
+      ini_config_files: '{{ ini_config_bootstrap }}'
+      tags: [ini_config_bootstrap]
+
+- name: Configuration
+  hosts: all
+  become: true
+  gather_facts: false
+  roles:
+    - role: apt_packages
+      tags: [apt_packages]
+    - role: unarchive
+      tags: [unarchive]
+    - role: user
+      tags: [user]
+    - role: file
+      tags: [file]
+    - role: config
+      tags: [config]
+
+- name: Ceph
+  hosts: core
+  become: true
+  gather_facts: false
+  roles:
+    - role: ceph
+      tags: [ceph]
+...

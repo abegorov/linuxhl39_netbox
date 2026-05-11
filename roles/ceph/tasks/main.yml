@@ -1,0 +1,43 @@
+---
+- name: Bootstrap ceph cluster
+  ansible.builtin.command: >-
+    cephadm bootstrap
+    --ssh-user {{ ceph_ssh_user }}
+    --mon-ip {{ ceph_bootstrap_mon_ip | ansible.builtin.quote }}
+    --initial-dashboard-user {{ ceph_dashboard_user | ansible.builtin.quote }}
+    --initial-dashboard-password
+    {{ ceph_dashboard_password | ansible.builtin.quote }}
+    {{ ceph_bootstrap_args }}
+  args:
+    creates: /etc/ceph/ceph.pub
+  register: _ceph_bootstrap
+  when: inventory_hostname == ceph_bootstrap_host
+
+- name: Slurp ceph ssh public key
+  ansible.builtin.slurp:
+    src: /etc/ceph/ceph.pub
+  register: _ceph_pub
+  when: inventory_hostname == ceph_bootstrap_host
+
+- name: Update ceph admin authorized keys
+  ansible.posix.authorized_key:
+    user: ceph-admin
+    key: '{{ hostvars[ceph_bootstrap_host]._ceph_pub.content |
+      ansible.builtin.b64decode }}'
+    state: present
+  when: hostvars[ceph_bootstrap_host]._ceph_pub.content is defined
+
+- name: Import config role
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ ceph_config }}'
+    config_owner: root
+    config_group: root
+    config_mode: '0600'
+    config_notify: Apply ceph cluster spec
+
+- name: Force all notified handlers to run at this point
+  ansible.builtin.meta: flush_handlers
+...

@@ -1,0 +1,8 @@
+---
+- name: Wait 600 seconds for target connection to become reachable/usable
+  ansible.builtin.wait_for_connection:
+    connect_timeout: '{{ wait_for_connection_connect_timeout }}'
+    delay: '{{ wait_for_connection_delay }}'
+    sleep: '{{ wait_for_connection_sleep }}'
+    timeout: '{{ wait_for_connection_timeout }}'
+...

@@ -1,0 +1,30 @@
+---
+tls_copy_debug: '{{ debug | default(false) }}'
+
+tls_copy_ca_dir: ./secrets/{{ item.key }}
+tls_copy_ca_src: '{{ tls_copy_ca_dir }}/ca.crt'
+tls_copy_ca_content: '{{ lookup("ansible.builtin.file", tls_copy_ca_src) }}'
+tls_copy_cert_dir: '{{ tls_copy_ca_dir }}'
+tls_copy_cert_src: '{{ tls_copy_cert_dir }}/{{ inventory_hostname }}.crt'
+tls_copy_cert_content: '{{ lookup("ansible.builtin.file",
+  tls_copy_cert_src) }}'
+tls_copy_key_src: '{{ tls_copy_cert_dir }}/{{ inventory_hostname }}.key'
+tls_copy_key_content: '{{ lookup("ansible.builtin.file", tls_copy_key_src) }}'
+
+tls_copy_ca_chain: false
+tls_copy_ca_path: '{{ item.value }}/{{ item.key }}-ca.crt'
+tls_copy_cert_path: '{{ item.value }}/{{ item.key }}.crt'
+tls_copy_cert_owner: root
+tls_copy_cert_group: root
+tls_copy_cert_mode: '0644'
+tls_copy_key_path: '{{ item.value }}/{{ item.key }}.key'
+tls_copy_key_format: pkcs1
+tls_copy_key_owner: root
+tls_copy_key_group: root
+tls_copy_key_mode: '0600'
+tls_copy_notify: []
+
+# tls_copy_certs:
+#   elasticsearch: /etc/elasticsearch/certs
+tls_copy_certs: {}
+...

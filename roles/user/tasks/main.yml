@@ -1,0 +1,30 @@
+---
+- name: Create user groups
+  ansible.builtin.group:
+    name: '{{ item.value.group | default(item.key) }}'
+    system: '{{ item.value.system | default(user_system) }}'
+    gid: '{{ item.value.gid | default(omit) }}'
+  loop: '{{ user_add | ansible.builtin.dict2items }}'
+  loop_control:
+    label: '{{ item.key }}'
+
+- name: Create users
+  ansible.builtin.user:
+    name: '{{ item.key }}'
+    system: '{{ item.value.system | default(user_system) }}'
+    password: '{{ item.value.password | default(user_password) }}'
+    update_password: '{{ item.value.update_password | default(omit) }}'
+    uid: '{{ item.value.uid | default(omit) }}'
+    append: '{{ item.value.append | default(user_append) }}'
+    group: '{{ item.value.group | default(item.key) }}'
+    groups: '{{ item.value.groups | default(omit) }}'
+    comment: '{{ item.value.comment | default(omit) }}'
+    home: '{{ item.value.home | default(user_home) }}'
+    shell: '{{ item.value.shell | default(user_shell) }}'
+    create_home: '{{ item.value.create_home | default(user_create_home) }}'
+    skeleton: '{{ item.value.skeleton | default(omit, true) }}'
+    state: present
+  loop: '{{ user_add | ansible.builtin.dict2items }}'
+  loop_control:
+    label: '{{ item.key }}'
+...

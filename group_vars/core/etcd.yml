@@ -1,0 +1,14 @@
+---
+user_add_etcd:
+  etcd:
+
+file_group_etcd:
+  - paths: [/etc/etcd]
+    state: directory
+file_group_etcd_data:
+  - paths: [/var/lib/etcd]
+    owner: etcd
+    group: etcd
+    mode: '0700'
+    state: directory
+...

@@ -1,0 +1,41 @@
+---
+- name: Create unarchive cache directory
+  ansible.builtin.file:
+    path: '{{ unarchive_cache }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Download archive to the cache directory
+  ansible.builtin.get_url:
+    url: '{{ item.value.url }}'
+    dest: '{{ unarchive_cache }}/{{ item.key }}'
+    checksum: '{{ item.value.checksum | default(omit) }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop: '{{ unarchive_urls | ansible.builtin.dict2items }}'
+  loop_control:
+    label: '{{ item.key }}'
+
+- name: Extract files from archive
+  ansible.builtin.unarchive:
+    src: '{{ unarchive_cache }}/{{ item.key }}'
+    dest: '{{ item.value.dest | default(unarchive_dest) }}'
+    remote_src: true
+    creates: '{{ item.value.creates | default(omit) }}'
+    include: '{{ item.value.include | default(omit) }}'
+    extra_opts: '{{ item.value.extra_opts | default(unarchive_extra_opts) }}'
+    owner: '{{ item.value.owner | default(unarchive_owner) |
+      default(omit, true) }}'
+    group: '{{ item.value.group | default(unarchive_group) |
+      default(omit, true) }}'
+    mode: '{{ item.value.mode | default(unarchive_mode) |
+      default(omit, true) }}'
+  notify: '{{ item.value.notify | default(unarchive_notify) |
+    default(omit, true) }}'
+  loop: '{{ unarchive_urls | ansible.builtin.dict2items }}'
+  loop_control:
+    label: '{{ item.key }}'
+...

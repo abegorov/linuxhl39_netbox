@@ -1,0 +1,60 @@
+---
+- name: Create private keys
+  become: false
+  delegate_to: localhost
+  community.crypto.openssl_privatekey:
+    path: '{{ tls_certs_key_path }}'
+  loop: '{{ tls_certs_certs.keys() }}'
+  loop_control:
+    loop_var: ca_name
+  no_log: '{{ not tls_certs_debug }}'
+
+- name: Create certificate signing requests (CSRs)
+  become: false
+  delegate_to: localhost
+  vars:
+    ca_name: '{{ item.key }}'
+  community.crypto.openssl_csr_pipe:
+    common_name: '{{ item.value.common_name | default(tls_certs_common_name) }}'
+    extended_key_usage: '{{ item.value.extended_key_usage |
+      default(tls_certs_extended_key_usage) }}'
+    extended_key_usage_critical: '{{ item.value.extended_key_usage_critical |
+      default(tls_certs_extended_key_usage_critical) }}'
+    key_usage: '{{ item.key_usage | default(tls_certs_key_usage) }}'
+    key_usage_critical: '{{ item.value.key_usage_critical |
+      default(tls_certs_key_usage_critical) }}'
+    privatekey_path: '{{ tls_certs_key_path }}'
+    subject_alt_name: '{{ item.value.subject_alt_name |
+      default(tls_certs_subject_alt_name) }}'
+    use_common_name_for_san: '{{ item.value.use_common_name_for_san |
+      default(tls_certs_use_common_name_for_san) }}'
+  changed_when: false
+  loop: '{{ tls_certs_certs | ansible.builtin.dict2items }}'
+  loop_control:
+    label: '{{ ca_name }}'
+  no_log: '{{ not tls_certs_debug }}'
+  register: _tls_certs_csrs
+
+- name: Create certificates from CSRs
+  become: false
+  delegate_to: localhost
+  vars:
+    ca_name: '{{ item.item.key }}'
+  community.crypto.x509_certificate:
+    csr_content: "{{ item.csr }}"
+    ignore_timestamps: '{{ item.item.value.ignore_timestamps |
+      default(tls_certs_ignore_timestamps) }}'
+    ownca_content: '{{ tls_certs_ca_content }}'
+    ownca_not_after: '{{ item.item.value.not_after |
+      default(tls_certs_not_after) }}'
+    ownca_not_before: '{{ item.item.value.not_before |
+      default(tls_certs_not_before) }}'
+    ownca_privatekey_content: '{{ tls_certs_ca_key_content }}'
+    path: '{{ tls_certs_cert_path }}'
+    privatekey_path: '{{ item.privatekey }}'
+    provider: ownca
+  loop: '{{ _tls_certs_csrs.results }}'
+  loop_control:
+    label: '{{ ca_name }}'
+  no_log: '{{ not tls_certs_debug }}'
+...

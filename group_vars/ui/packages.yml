@@ -1,0 +1,11 @@
+---
+apt_sources_add_override:
+  grafana: '{{ apt_sources_add_grafana }}'
+  postgresql: '{{ apt_sources_add_postgresql }}'
+apt_packages_add_override:
+  - grafana
+  - kibana
+  - haproxy
+  - keepalived
+  - pgbouncer
+...

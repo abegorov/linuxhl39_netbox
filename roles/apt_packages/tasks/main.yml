@@ -1,0 +1,8 @@
+---
+- name: Install apt packages
+  ansible.builtin.apt:
+    name: '{{ apt_packages_add }}'
+    cache_valid_time: 3600
+    update_cache: true
+    state: present
+...

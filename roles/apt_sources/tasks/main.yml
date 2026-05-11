@@ -1,0 +1,70 @@
+---
+- name: Gather distribution facts
+  ansible.builtin.setup:
+    gather_subset: ['!all', '!min', distribution]
+
+- name: Update sources.list
+  ansible.builtin.copy:
+    content: '{{ apt_sources_list }}'
+    dest: /etc/apt/sources.list
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Update apt cache
+
+- name: Create keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Update keyrings files
+  ansible.builtin.copy:
+    content: '{{ apt_sources_keyrings[item] | ansible.builtin.b64decode }}'
+    dest: /etc/apt/keyrings/{{ item }}.gpg
+    owner: root
+    group: root
+    mode: '0644'
+  loop: '{{ apt_sources_add.keys() }}'
+  when: item in apt_sources_keyrings
+  notify: Update apt cache
+
+- name: Create sources.list.d directory
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Update sources.list.d files
+  ansible.builtin.copy:
+    content: '{{ item.value }}'
+    dest: /etc/apt/sources.list.d/{{ item.key }}.sources
+    owner: root
+    group: root
+    mode: '0644'
+  loop: '{{ apt_sources_add | ansible.builtin.dict2items }}'
+  loop_control:
+    label: '{{ item.key }}'
+  notify: Update apt cache
+
+- name: Remove keyrings files
+  ansible.builtin.file:
+    path: /etc/apt/keyrings/{{ item }}.gpg
+    state: absent
+  loop: '{{ apt_sources_remove }}'
+  notify: Update apt cache
+
+- name: Remove sources.list.d files
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/{{ item }}.sources
+    state: absent
+  loop: '{{ apt_sources_remove }}'
+  notify: Update apt cache
+
+- name: Force all notified handlers to run at this point
+  ansible.builtin.meta: flush_handlers
+...

@@ -1,0 +1,4 @@
+---
+tls_certs_certs:
+  elasticsearch:
+...

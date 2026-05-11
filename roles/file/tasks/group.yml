@@ -1,0 +1,10 @@
+---
+- name: Process file group paths
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: '{{ filegroup.state | default(omit) }}'
+    owner: '{{ filegroup.owner | default(omit) }}'
+    group: '{{ filegroup.group | default(omit) }}'
+    mode: '{{ filegroup.mode | default(omit) }}'
+  loop: '{{ filegroup.paths | default([]) }}'
+...

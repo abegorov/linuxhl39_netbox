@@ -1,0 +1,66 @@
+---
+apt_sources_add: '{{ apt_sources_add_default |
+  combine(apt_sources_add_override) }}'
+apt_sources_add_default:
+  elastic: '{{ apt_sources_add_elastic }}'
+  ubuntu: '{{ apt_sources_add_ubuntu }}'
+apt_sources_add_override: {}
+
+apt_sources_add_angie: |
+  Types: deb
+  URIs: https://download.angie.software/angie/{{ ansible_facts.distribution |
+    lower }}/{{ ansible_facts.distribution_version }}
+  Suites: {{ ansible_facts.distribution_release }}
+  Components: main
+  Signed-By: /etc/apt/keyrings/angie.gpg
+
+apt_sources_add_ceph: |
+  Types: deb
+  URIs: https://mirror.yandex.ru/mirrors/ceph/debian-tentacle/
+  Suites: {{ ansible_facts.distribution_release }}
+  Components: main
+  Signed-By: /etc/apt/keyrings/ceph.gpg
+
+apt_sources_add_grafana: |
+  Types: deb
+  URIs: https://mirror.yandex.ru/mirrors/packages.grafana.com/oss/deb/
+  Suites: stable
+  Components: main
+  Signed-By: /etc/apt/keyrings/grafana.gpg
+
+apt_sources_add_elastic: |
+  Types: deb
+  URIs: https://mirror.yandex.ru/mirrors/elastic/9/
+  Suites: stable
+  Components: main
+  Signed-By: /etc/apt/keyrings/elastic.gpg
+
+apt_sources_add_redis: |
+  Types: deb
+  URIs: https://mirror.yandex.ru/mirrors/packages.redis.io/
+  Suites: {{ ansible_facts.distribution_release }}
+  Components: main
+  Signed-By: /etc/apt/keyrings/redis.gpg
+
+apt_sources_add_postgresql: |
+  Types: deb
+  URIs: https://mirror.yandex.ru/mirrors/postgresql/
+  Suites: {{ ansible_facts.distribution_release }}-pgdg
+  Components: main
+  Signed-By: /etc/apt/keyrings/postgresql.gpg
+
+apt_sources_add_ubuntu: |
+  Types: deb
+  URIs: http://mirror.yandex.ru/ubuntu/
+  Suites: {{ ansible_facts.distribution_release }} {{
+    ansible_facts.distribution_release }}-updates {{
+    ansible_facts.distribution_release }}-backports
+  Components: main universe restricted multiverse
+  Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+  Types: deb
+  URIs: http://mirror.yandex.ru/ubuntu/
+  Suites: {{ ansible_facts.distribution_release }}-security
+  Components: main universe restricted multiverse
+  Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+...
