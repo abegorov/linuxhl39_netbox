@@ -4,5 +4,6 @@ apt_packages_add_default:
   - bash-completion
   - chrony
   - filebeat
+  - update-notifier-common
 apt_packages_add_override: []
 ...
