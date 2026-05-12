@@ -34,6 +34,8 @@
       tags: [user]
     - role: file
       tags: [file]
+    - role: lineinfile
+      tags: [lineinfile]
     - role: config
       tags: [config]
 
@@ -44,4 +46,6 @@
   roles:
     - role: ceph
       tags: [ceph]
+    - role: etcd
+      tags: [etcd]
 ...
