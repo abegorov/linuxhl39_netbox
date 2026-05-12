@@ -28,6 +28,7 @@
   loop: '{{ tls_copy_certs | ansible.builtin.dict2items }}'
   loop_control:
     label: '{{ item.key }}'
+  when: tls_copy_cert_src is exists
   notify: '{{ tls_copy_notify }}'
 
 - name: Update keys
@@ -42,5 +43,6 @@
   loop: '{{ tls_copy_certs | ansible.builtin.dict2items }}'
   loop_control:
     label: '{{ item.key }}'
+  when: tls_copy_key_src is exists
   notify: '{{ tls_copy_notify }}'
 ...
