@@ -3,13 +3,14 @@
   ansible.builtin.copy:
     content: '{{ item.value.content }}'
     dest: '{{ item.key }}'
+    force: '{{ item.value.force | default(omit) }}'
     owner: '{{ item.value.owner | default(config_owner) |
       default(omit, true) }}'
     group: '{{ item.value.group | default(config_group) |
       default(omit, true) }}'
     mode: '{{ item.value.mode | default(config_mode) |
       default(omit, true) }}'
-    validate: '{{ item.value.validate | default(omit, true) }}'
+    validate: '{{ item.value.validate | default(omit) }}'
   notify: '{{ item.value.notify | default(config_notify) |
     default(omit, true) }}'
   loop: '{{ config_content | ansible.builtin.dict2items }}'
