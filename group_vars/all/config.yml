@@ -5,6 +5,9 @@ config_content: '{{ {} | ansible.builtin.combine(*query(
 file_groups: '{{ query("ansible.builtin.vars", *query(
   "ansible.builtin.varnames", "^file_group_.+")) |
   ansible.builtin.flatten(1) }}'
+lineinfile_files: '{{ {} | ansible.builtin.combine(*query(
+  "ansible.builtin.vars", *query("ansible.builtin.varnames",
+  "^lineinfile_file_.+"))) }}'
 user_add: '{{ {} | ansible.builtin.combine(*query(
   "ansible.builtin.vars", *query("ansible.builtin.varnames",
   "^user_add_.+"))) }}'

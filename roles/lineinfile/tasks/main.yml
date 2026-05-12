@@ -1,0 +1,8 @@
+---
+- name: Process configuration files
+  ansible.builtin.include_tasks: line.yml
+  loop: '{{ lineinfile_files | ansible.builtin.dict2items }}'
+  loop_control:
+    label: '{{ file.key }}'
+    loop_var: file
+...

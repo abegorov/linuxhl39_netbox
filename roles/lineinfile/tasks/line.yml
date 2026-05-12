@@ -1,0 +1,18 @@
+---
+- name: Process configuration file lines
+  ansible.builtin.lineinfile:
+    path: '{{ file.key }}'
+    backrefs: '{{ item.backrefs | default(omit) }}'
+    firstmatch: '{{ item.firstmatch | default(omit) }}'
+    insertafter: '{{ item.insertafter | default(omit) }}'
+    insertbefore: '{{ item.insertbefore | default(omit) }}'
+    line: '{{ item.line | default(omit) }}'
+    regexp: '{{ item.regexp | default(omit) }}'
+    search_string: '{{ item.search_string | default(omit) }}'
+    state: '{{ item.state | default(omit) }}'
+    validate: '{{ item.validate | default(omit) }}'
+  loop: '{{ [file.value] | ansible.builtin.flatten(1) }}'
+  loop_control:
+    index_var: index
+    label: '{{ index }}'
+...
