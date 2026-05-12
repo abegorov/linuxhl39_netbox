@@ -11,4 +11,159 @@ file_group_etcd_data:
     group: etcd
     mode: '0700'
     state: directory
+
+lineinfile_file_etcdctl:
+  /root/.bashrc:
+    - regexp: '^export ETCDCTL_CACERT='
+      line: export ETCDCTL_CACERT=/etc/etcd/etcd-ca.crt
+    - regexp: '^export ETCDCTL_CERT='
+      line: export ETCDCTL_CERT=/etc/etcd/etcd.crt
+    - regexp: '^export ETCDCTL_KEY='
+      line: export ETCDCTL_KEY=/etc/etcd/etcd.key
+    - regexp: '^export ETCDCTL_ENDPOINTS='
+      line: >-
+        export ETCDCTL_ENDPOINTS=
+        {%- for host in groups['core'] -%}
+        https://{{ hostvars[host].ip_address }}:2379
+        {{- ',' if not loop.last else '' -}}
+        {%- endfor -%}
+
+etcd_certs:
+  etcd: /etc/etcd
+  etcd-peer: /etc/etcd
+
+etcd_config:
+  /etc/etcd/etcd.yml:
+    content: |
+      name: {{ inventory_hostname }}
+      data-dir: /var/lib/etcd
+      wal-dir:
+      snapshot-count: 10000
+      heartbeat-interval: 40
+      election-timeout: 400
+      initial-election-tick-advance: true
+      listen-peer-urls: https://{{ ip_address }}:2380
+      listen-client-urls: https://localhost:2379,https://{{ ip_address }}:2379
+      listen-client-http-urls: https://localhost:2382,https://{{ ip_address }}:2382
+      max-snapshots: 5
+      max-wals: 5
+      quota-backend-bytes: 0
+      backend-bbolt-freelist-type: map
+      backend-batch-interval:
+      backend-batch-limit: 0
+      max-txn-ops: 128
+      max-request-bytes: 1572864
+      max-concurrent-streams: 4294967295
+      enable-grpc-gateway: true
+      socket-reuse-port: false
+      socket-reuse-address: false
+      raft-read-timeout: 5s
+      raft-write-timeout: 5s
+      initial-advertise-peer-urls: https://{{ ip_address }}:2380
+      initial-cluster: {{ '' }}
+        {% for host in groups['core'] -%}
+        {{ host }}=https://{{ hostvars[host].ip_address }}:2380
+        {{- ',' if not loop.last else '' }}
+        {%- endfor -%}
+        {{ '' }}
+      initial-cluster-state: new
+      initial-cluster-token: {{ ",".join(groups['core']) | ansible.builtin.sha1 }}
+      advertise-client-urls: https://{{ ip_address }}:2379
+      strict-reconfig-check: false
+      pre-vote: true
+      auto-compaction-retention: 5m
+      auto-compaction-mode: periodic
+      enable-v2: false
+      v2-deprecation: gone
+      client-transport-security:
+        cert-file: /etc/etcd/etcd.crt
+        key-file: /etc/etcd/etcd.key
+        client-cert-auth: true
+        trusted-ca-file: /etc/etcd/etcd-ca.crt
+        auto-tls: false
+      peer-transport-security:
+        cert-file: /etc/etcd/etcd-peer.crt
+        key-file: /etc/etcd/etcd-peer.key
+        client-cert-auth: true
+        trusted-ca-file: /etc/etcd/etcd-peer-ca.crt
+        auto-tls: false
+        allowed-cn:
+        allowed-hostname:
+      self-signed-cert-validity: 100
+      cipher-suites:
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+      cors: '*'
+      tls-min-version: TLS1.2
+      tls-max-version:
+      auth-token: simple
+      bcrypt-cost: 10
+      auth-token-ttl: 300
+      enable-pprof: false
+      metrics: extensive
+      listen-metrics-urls: http://{{ ip_address }}:2381
+      logger: zap
+      log-outputs: [default]
+      log-level: info
+      enable-log-rotation: false
+      log-rotation-config-json: |
+        {
+          "maxsize": 100,
+          "maxage": 0,
+          "maxbackups": 0,
+          "localtime": false,
+          "compress": false
+        }
+  /etc/systemd/system/etcd.service:
+    content: |
+      [Unit]
+      Description=etcd key-value store
+      Documentation=https://github.com/etcd-io/etcd
+      After=network-online.target local-fs.target remote-fs.target time-sync.target
+      Wants=network-online.target local-fs.target remote-fs.target time-sync.target
+
+      [Service]
+      Type=notify
+      User=etcd
+      Group=etcd
+      ExecStart=/usr/local/bin/etcd --config-file /etc/etcd/etcd.yml
+      LimitNOFILE=40000
+      Nice=-20
+
+      SyslogIdentifier=etcd
+      RestartSec=1s
+      Restart=on-failure
+      StartLimitInterval=0
+
+      PrivateTmp=true
+      ProtectHome=true
+      NoNewPrivileges=true
+      ProtectSystem=strict
+      ReadWritePaths=/var/lib/etcd
+      ProtectControlGroups=true
+      ProtectKernelModules=true
+      ProtectKernelTunables=true
+      ProtectKernelLogs=true
+      ProtectClock=true
+      ProtectProc=invisible
+      ProtectHostname=true
+
+      RemoveIPC=true
+      CapabilityBoundingSet=
+      PrivateDevices=true
+      SystemCallArchitectures=native
+      MemoryDenyWriteExecute=true
+      RestrictNamespaces=true
+      RestrictSUIDSGID=true
+      LockPersonality=true
+      RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+      RestrictRealtime=true
+      PrivateUsers=true
+      ProcSubset=pid
+      SystemCallFilter=@system-service
+      SystemCallFilter=~@resources @privileged
+      UMask=7077
+
+      [Install]
+      WantedBy=multi-user.target
 ...

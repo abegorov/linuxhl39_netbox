@@ -1,7 +1,6 @@
 ---
-tls_ca_certs:
+tls_certs_certs:
   ceph-rgw:
   etcd:
   etcd-peer:
-  elasticsearch:
 ...
