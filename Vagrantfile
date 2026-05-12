@@ -132,7 +132,7 @@ Vagrant.configure('2') do |config|
           ansible.limit = 'all'
           ansible.compatibility_mode = '2.0'
           ansible.raw_arguments = ['--diff']
-          ansible.tags = ['tls_certs']
+          # ansible.tags = ['patroni']
           # ansible.tags = ['config', 'file', 'user', 'ceph']
           # ansible.skip_tags = ['apt_upgrade']
         end

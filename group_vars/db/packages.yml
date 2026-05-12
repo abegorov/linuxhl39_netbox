@@ -3,7 +3,9 @@ apt_sources_add_override:
   redis: '{{ apt_sources_add_redis }}'
   postgresql: '{{ apt_sources_add_postgresql }}'
 
+postgresql_version: 18
+
 apt_packages_add_override:
   - patroni
-  - postgresql-18
+  - postgresql-{{ postgresql_version }}
 ...

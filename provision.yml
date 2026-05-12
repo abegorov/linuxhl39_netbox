@@ -30,16 +30,20 @@
       tags: [apt_packages]
     - role: unarchive
       tags: [unarchive]
+    - role: locale_gen
+      tags: [locale_gen]
     - role: user
       tags: [user]
     - role: file
       tags: [file]
+    - role: ini_config
+      tags: [ini_config]
     - role: lineinfile
       tags: [lineinfile]
     - role: config
       tags: [config]
 
-- name: Ceph
+- name: Core
   hosts: core
   become: true
   gather_facts: false
@@ -48,4 +52,12 @@
       tags: [ceph]
     - role: etcd
       tags: [etcd]
+
+- name: DB
+  hosts: db
+  become: true
+  gather_facts: false
+  roles:
+    - role: patroni
+      tags: [patroni]
 ...

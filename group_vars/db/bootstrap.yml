@@ -7,5 +7,4 @@ ini_config_bootstrap:
     no_extra_spaces: false
     options:
       create_main_cluster: 'false'
-      ssl: 'off'
 ...

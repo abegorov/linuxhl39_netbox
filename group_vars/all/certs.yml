@@ -4,4 +4,6 @@ tls_ca_certs:
   etcd:
   etcd-peer:
   elasticsearch:
+  patroni:
+  postgresql:
 ...
