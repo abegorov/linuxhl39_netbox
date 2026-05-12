@@ -33,9 +33,6 @@
     public: false
   vars:
     config_content: '{{ ceph_config }}'
-    config_owner: root
-    config_group: root
-    config_mode: '0600'
     config_notify: Apply ceph cluster spec
 
 - name: Force all notified handlers to run at this point
