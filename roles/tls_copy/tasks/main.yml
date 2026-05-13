@@ -20,10 +20,16 @@
       {% if tls_copy_ca_chain %}
       {{ tls_copy_ca_content }}
       {% endif %}
+      {% if tls_copy_key_chain %}
+      {{ tls_copy_key_content }}
+      {% endif %}
     dest: '{{ tls_copy_cert_path }}'
-    owner: '{{ tls_copy_cert_owner }}'
-    group: '{{ tls_copy_cert_group }}'
-    mode: '{{ tls_copy_cert_mode }}'
+    owner: '{{ tls_copy_key_owner if tls_copy_key_chain
+      else tls_copy_cert_owner }}'
+    group: '{{ tls_copy_key_group if tls_copy_key_chain
+      else tls_copy_cert_group }}'
+    mode: '{{ tls_copy_key_mode if tls_copy_key_chain
+      else tls_copy_cert_mode }}'
   no_log: '{{ not tls_copy_debug }}'
   loop: '{{ tls_copy_certs | ansible.builtin.dict2items }}'
   loop_control:
@@ -43,6 +49,8 @@
   loop: '{{ tls_copy_certs | ansible.builtin.dict2items }}'
   loop_control:
     label: '{{ item.key }}'
-  when: tls_copy_key_src is exists
+  when:
+    - tls_copy_key_src is exists
+    - not tls_copy_key_chain
   notify: '{{ tls_copy_notify }}'
 ...
