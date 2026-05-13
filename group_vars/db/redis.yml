@@ -28,6 +28,7 @@ redis_tls_ciphersuites:
 
 redis_config:
   /etc/redis/dhparam:
+    # https://ssl-config.mozilla.org/ffdhe2048.txt
     content: |
       -----BEGIN DH PARAMETERS-----
       MIIBCAKCAQEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz

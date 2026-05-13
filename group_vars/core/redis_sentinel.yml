@@ -32,6 +32,7 @@ redis_sentinel_myid: '{{ lookup("ansible.builtin.password", "/dev/null",
 
 redis_sentinel_config:
   /etc/redis/dhparam:
+    # https://ssl-config.mozilla.org/ffdhe2048.txt
     content: |
       -----BEGIN DH PARAMETERS-----
       MIIBCAKCAQEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz
