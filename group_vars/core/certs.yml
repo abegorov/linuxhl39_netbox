@@ -3,4 +3,5 @@ tls_certs_certs:
   ceph-rgw:
   etcd:
   etcd-peer:
+  redis:
 ...

@@ -3,4 +3,5 @@ tls_certs_certs:
   etcd:
   patroni:
   postgresql:
+  redis:
 ...

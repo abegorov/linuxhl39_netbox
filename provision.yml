@@ -60,4 +60,6 @@
   roles:
     - role: patroni
       tags: [patroni]
+    - role: redis
+      tags: [redis]
 ...

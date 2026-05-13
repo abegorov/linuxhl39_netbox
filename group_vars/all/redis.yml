@@ -1,0 +1,4 @@
+---
+redis_password: '{{ lookup("ansible.builtin.password",
+  "secrets/redis_password.txt", length=26) }}'
+...

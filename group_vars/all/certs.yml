@@ -6,4 +6,5 @@ tls_ca_certs:
   elasticsearch:
   patroni:
   postgresql:
+  redis:
 ...
