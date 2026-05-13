@@ -1,0 +1,128 @@
+---
+haproxy_certs:
+  patroni: /etc/haproxy
+  postgresql: /etc/haproxy
+  redis: /etc/haproxy
+
+haproxy_stats_password: '{{ lookup("ansible.builtin.password",
+  "secrets/haproxy_stats_password.txt", length=26, encrypt="sha512_crypt") }}'
+
+haproxy_ssl_default_curves:
+  - X25519
+  - prime256v1
+  - secp384r1
+haproxy_ssl_default_ciphers:
+  - ECDHE-ECDSA-AES128-GCM-SHA256
+  - ECDHE-RSA-AES128-GCM-SHA256
+  - ECDHE-ECDSA-AES256-GCM-SHA384
+  - ECDHE-RSA-AES256-GCM-SHA384
+  - ECDHE-ECDSA-CHACHA20-POLY1305
+  - ECDHE-RSA-CHACHA20-POLY1305
+  - DHE-RSA-AES128-GCM-SHA256
+  - DHE-RSA-AES256-GCM-SHA384
+  - DHE-RSA-CHACHA20-POLY1305
+haproxy_ssl_default_ciphersuites:
+  - TLS_AES_128_GCM_SHA256
+  - TLS_AES_256_GCM_SHA384
+  - TLS_CHACHA20_POLY1305_SHA256
+
+# yamllint disable rule:line-length
+haproxy_config:
+  # https://ssl-config.mozilla.org/ffdhe2048.txt
+  /etc/haproxy/dhparam:
+    content: |
+      -----BEGIN DH PARAMETERS-----
+      MIIBCAKCAQEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz
+      +8yTnc4kmz75fS/jY2MMddj2gbICrsRhetPfHtXV/WVhJDP1H18GbtCFY2VVPe0a
+      87VXE15/V8k1mE8McODmi3fipona8+/och3xWKE2rec1MKzKT0g6eXq8CrGCsyT7
+      YdEIqUuyyOP7uWrat2DX9GgdT0Kj3jlN9K5W7edjcrsZCwenyO4KbXCeAvzhzffi
+      7MA0BM0oNC9hkXL+nOmFg/+OTxIy7vKBg8P+OxtMb61zO7X8vC7CIAXFjvGDfRaD
+      ssbzSibBsu/6iGtCOGEoXJf//////////wIBAg==
+      -----END DH PARAMETERS-----
+  /etc/haproxy/haproxy.cfg:
+    mode: '0600'
+    content: |
+      global
+        log /dev/log local0
+        log /dev/log local1 notice
+        chroot /var/lib/haproxy
+        stats socket /run/haproxy/admin.sock mode 660 level admin
+        stats timeout 30000
+        user haproxy
+        group haproxy
+        daemon
+
+        # Default SSL material locations
+        ca-base /etc/haproxy
+        crt-base /etc/haproxy
+
+        # See: https://ssl-config.mozilla.org/#server=haproxy'
+        ssl-default-bind-curves {{ haproxy_ssl_default_curves | join(":") }}
+        ssl-default-bind-ciphers {{ haproxy_ssl_default_ciphers | join(":") }}
+        ssl-default-bind-ciphersuites {{ haproxy_ssl_default_ciphersuites |
+        join(":") }}
+        ssl-default-bind-options ssl-min-ver TLSv1.2 no-tls-tickets
+        ssl-default-server-ciphers {{ haproxy_ssl_default_ciphers | join(":") }}
+        ssl-default-server-ciphersuites {{ haproxy_ssl_default_ciphersuites |
+        join(":") }}
+        ssl-default-server-options ssl-min-ver TLSv1.2 no-tls-tickets
+        ssl-dh-param-file /etc/haproxy/dhparam
+
+        maxconn 400
+      defaults
+        log     global
+        mode    tcp
+        retries 2
+        timeout connect 4s
+        timeout client  30m
+        timeout server  30m
+        timeout check   1s
+        errorfile 400 /etc/haproxy/errors/400.http
+        errorfile 403 /etc/haproxy/errors/403.http
+        errorfile 408 /etc/haproxy/errors/408.http
+        errorfile 500 /etc/haproxy/errors/500.http
+        errorfile 502 /etc/haproxy/errors/502.http
+        errorfile 503 /etc/haproxy/errors/503.http
+        errorfile 504 /etc/haproxy/errors/504.http
+      userlist stats
+        user stats password {{ haproxy_stats_password }}
+      listen stats
+        mode http
+        bind 127.0.0.1:7000
+        bind [::1]:7000
+        http-request auth unless { http_auth(stats) }
+        stats enable
+        stats uri /
+      listen primary
+        bind 127.0.0.1:5432
+        bind [::1]:5432
+        default-server inter 100 fall 3 rise 2 on-marked-down shutdown-sessions ssl verify required ca-file "postgresql-ca.crt" crt "postgresql.crt"
+      {% for server in groups['db'] %}
+        server {{ server }} {{ hostvars[server].ip_address }}:5432 track patroni/{{ server }}
+      {% endfor %}
+      backend patroni
+        option httpchk
+        http-check connect port 8008 ssl
+        http-check send meth OPTIONS uri /primary
+        http-check expect status 200
+        default-server inter 100 fall 3 rise 2 on-marked-down shutdown-sessions check ssl verify required ca-file "patroni-ca.crt" crt "patroni.crt"
+      {% for server in groups['db'] %}
+        server {{ server }} {{ hostvars[server].ip_address }}:5432
+      {% endfor %}
+      listen redis
+        bind 127.0.0.1:6379
+        bind [::1]:6379
+        option clitcpka
+        option tcp-check
+        default-server inter 100 fall 3 rise 2 on-marked-down shutdown-sessions check ssl verify required ca-file "redis-ca.crt" crt "redis.crt"
+        tcp-check connect ssl
+        tcp-check send AUTH\ {{ redis_password }}\r\n
+        tcp-check expect string +OK
+        tcp-check send info\ replication\r\n
+        tcp-check expect string role:master
+        tcp-check send QUIT\r\n
+        tcp-check expect string +OK
+      {% for server in groups['db'] %}
+        server {{ server }} {{ hostvars[server].ip_address }}:6379
+      {% endfor %}
+...

@@ -70,4 +70,12 @@
   roles:
     - role: redis_sentinel
       tags: [redis_sentinel]
+
+- name: Web
+  hosts: web
+  become: true
+  gather_facts: false
+  roles:
+    - role: haproxy
+      tags: [haproxy]
 ...
