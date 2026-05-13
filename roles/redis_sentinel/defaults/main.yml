@@ -1,0 +1,4 @@
+---
+redis_sentinel_certs: {}
+redis_sentinel_config: {}
+...

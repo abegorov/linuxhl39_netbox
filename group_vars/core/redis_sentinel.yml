@@ -1,0 +1,96 @@
+---
+lineinfile_file_redis_sentinel:
+  /root/.bashrc:
+    - regexp: '^export REDISCLI_AUTH='
+      line: export REDISCLI_AUTH='{{ redis_password }}'
+    - regexp: '^alias redis-cli='
+      line: alias redis-cli='redis-cli -h "${REDISCLI_HOST:-127.0.0.1}"
+        -p "${REDISCLI_PORT:-26379}" --user "${REDISCLI_USER:-default}"
+        --tls --cacert /etc/redis/redis-ca.crt
+        --cert /etc/redis/redis.crt --key /etc/redis/redis.key'
+
+redis_sentinel_certs:
+  redis: /etc/redis
+
+redis_sentinel_tls_ciphers:
+  - ECDHE-ECDSA-AES128-GCM-SHA256
+  - ECDHE-RSA-AES128-GCM-SHA256
+  - ECDHE-ECDSA-AES256-GCM-SHA384
+  - ECDHE-RSA-AES256-GCM-SHA384
+  - ECDHE-ECDSA-CHACHA20-POLY1305
+  - ECDHE-RSA-CHACHA20-POLY1305
+  - DHE-RSA-AES128-GCM-SHA256
+  - DHE-RSA-AES256-GCM-SHA384
+  - DHE-RSA-CHACHA20-POLY1305
+redis_sentinel_tls_ciphersuites:
+  - TLS_AES_128_GCM_SHA256
+  - TLS_AES_256_GCM_SHA384
+  - TLS_CHACHA20_POLY1305_SHA256
+
+redis_sentinel_myid: '{{ lookup("ansible.builtin.password", "/dev/null",
+  length=40, chars="0123456789abcdef", seed=inventory_hostname) }}'
+
+redis_sentinel_config:
+  /etc/redis/dhparam:
+    content: |
+      -----BEGIN DH PARAMETERS-----
+      MIIBCAKCAQEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz
+      +8yTnc4kmz75fS/jY2MMddj2gbICrsRhetPfHtXV/WVhJDP1H18GbtCFY2VVPe0a
+      87VXE15/V8k1mE8McODmi3fipona8+/och3xWKE2rec1MKzKT0g6eXq8CrGCsyT7
+      YdEIqUuyyOP7uWrat2DX9GgdT0Kj3jlN9K5W7edjcrsZCwenyO4KbXCeAvzhzffi
+      7MA0BM0oNC9hkXL+nOmFg/+OTxIy7vKBg8P+OxtMb61zO7X8vC7CIAXFjvGDfRaD
+      ssbzSibBsu/6iGtCOGEoXJf//////////wIBAg==
+      -----END DH PARAMETERS-----
+  /etc/redis/sentinel.conf:
+    owner: redis
+    mode: '0600'
+    content: |
+      # https://ssl-config.mozilla.org/#server=redis
+      acllog-max-len 128
+      bind 127.0.0.1 {{ ip_address }} -::1
+      daemonize yes
+      dir /var/lib/redis
+      latency-tracking-info-percentiles 50 99 99.9
+      logfile /var/log/redis/redis-sentinel.log
+      loglevel notice
+      masterauth "{{ redis_password }}"
+      pidfile /run/sentinel/redis-sentinel.pid
+      port 0
+      protected-mode yes
+      requirepass "{{ redis_password }}"
+      sentinel announce-hostnames no
+      sentinel announce-ip {{ ip_address }}
+      sentinel auth-pass mymaster "{{ redis_password }}"
+      sentinel config-epoch mymaster 0
+      sentinel current-epoch 0
+      sentinel deny-scripts-reconfig yes
+      sentinel down-after-milliseconds mymaster 1000
+      sentinel failover-timeout mymaster 2000
+      sentinel leader-epoch mymaster 0
+      sentinel monitor mymaster {{ hostvars[redis_master].ip_address }} 6379 2
+      sentinel myid {{ redis_sentinel_myid }}
+      sentinel resolve-hostnames no
+      supervised systemd
+      tcp-backlog 511
+      tls-auth-clients yes
+      tls-ca-cert-file /etc/redis/redis-ca.crt
+      tls-cert-file /etc/redis/redis.crt
+      tls-ciphers {{ redis_sentinel_tls_ciphers | join(':') }}
+      tls-ciphersuites {{ redis_sentinel_tls_ciphersuites | join(':') }}
+      tls-cluster yes
+      tls-dh-params-file /etc/redis/dhparam
+      tls-key-file /etc/redis/redis.key
+      tls-port 26379
+      tls-prefer-server-ciphers no
+      tls-protocols "TLSv1.2 TLSv1.3"
+      tls-replication yes
+      user default on nopass sanitize-payload ~* &* +@all
+      {% for host in groups['db'] | reject('eq', redis_master) %}
+      sentinel known-replica mymaster {{ hostvars[host].ip_address }} 6379
+      {% endfor %}
+      {% for host in groups['core'] | reject('eq', inventory_hostname) %}
+      {% set hostvar = hostvars[host] %}
+      sentinel known-sentinel mymaster {{ hostvar.ip_address }} 26379 {{
+        hostvar.redis_sentinel_myid }}
+      {% endfor %}
+...

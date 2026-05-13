@@ -62,4 +62,12 @@
       tags: [patroni]
     - role: redis
       tags: [redis]
+
+- name: Redis sentinel
+  hosts: core
+  become: true
+  gather_facts: false
+  roles:
+    - role: redis_sentinel
+      tags: [redis_sentinel]
 ...

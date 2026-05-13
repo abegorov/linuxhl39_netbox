@@ -8,6 +8,7 @@ apt_packages_add_override:
   - podman
   - lvm2
   - redis-sentinel
+  - redis-server
 
 unarchive_urls_override:
   etcd.tar.gz:

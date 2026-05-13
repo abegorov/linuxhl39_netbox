@@ -1,4 +1,6 @@
 ---
 redis_password: '{{ lookup("ansible.builtin.password",
   "secrets/redis_password.txt", length=26) }}'
+
+redis_master: '{{ groups["db"] | first }}'
 ...
