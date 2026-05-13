@@ -105,7 +105,7 @@ patroni_config:
           primary_start_timeout: 0
           primary_stop_timeout: 300
           synchronous_mode: quorum
-          synchronous_mode_strict: true
+          synchronous_mode_strict: false
           synchronous_node_count: 1
           failsafe_mode: false
           check_timeline: true
@@ -168,7 +168,7 @@ patroni_config:
           ssl_cert_file: /etc/patroni/postgresql.crt
           ssl_key_file: /etc/patroni/postgresql.key
           ssl_min_protocol_version: TLSv1.2
-          ssl_ciphers: {{ patroni_pgsql_ssl_ciphers | join(":") }}
+          ssl_ciphers: {{ patroni_pgsql_ssl_ciphers | join(':') }}
           ssl_dh_params_file: /etc/patroni/dhparam
           unix_socket_directories: /var/run/postgresql/
           wal_log_hints: true
