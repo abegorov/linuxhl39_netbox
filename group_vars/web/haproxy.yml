@@ -1,7 +1,6 @@
 ---
 haproxy_certs:
   patroni: /etc/haproxy
-  postgresql: /etc/haproxy
   redis: /etc/haproxy
 
 haproxy_stats_password: '{{ lookup("ansible.builtin.password",
@@ -96,18 +95,18 @@ haproxy_config:
       listen primary
         bind 127.0.0.1:5432
         bind [::1]:5432
-        default-server inter 100 fall 3 rise 2 on-marked-down shutdown-sessions ssl verify required ca-file "postgresql-ca.crt" crt "postgresql.crt"
+        default-server inter 100 fall 3 rise 2 on-marked-down shutdown-sessions
       {% for server in groups['db'] %}
         server {{ server }} {{ hostvars[server].ip_address }}:5432 track patroni/{{ server }}
       {% endfor %}
       backend patroni
+        mode http
         option httpchk
-        http-check connect port 8008 ssl
         http-check send meth OPTIONS uri /primary
         http-check expect status 200
         default-server inter 100 fall 3 rise 2 on-marked-down shutdown-sessions check ssl verify required ca-file "patroni-ca.crt" crt "patroni.crt"
       {% for server in groups['db'] %}
-        server {{ server }} {{ hostvars[server].ip_address }}:5432
+        server {{ server }} {{ hostvars[server].ip_address }}:8008
       {% endfor %}
       listen redis
         bind 127.0.0.1:6379
