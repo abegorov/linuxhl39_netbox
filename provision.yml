@@ -60,6 +60,8 @@
   roles:
     - role: patroni
       tags: [patroni]
+    - role: patroni_db
+      tags: [patroni_db]
     - role: redis
       tags: [redis]
 
@@ -78,4 +80,6 @@
   roles:
     - role: haproxy
       tags: [haproxy]
+    - role: pgbouncer
+      tags: [pgbouncer]
 ...
