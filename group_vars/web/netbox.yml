@@ -1,6 +1,18 @@
 ---
 netbox_version: '4.6.0'
 
+file_groups_netbox:
+  - paths:
+      - /etc/netbox
+      - /var/lib/netbox
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  - paths: [/opt/netbox]
+    src: /opt/netbox
+    state: link
+
 user_add_netbox:
   netbox:
 
