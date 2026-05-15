@@ -1,0 +1,4 @@
+---
+netbox_db_password: '{{ lookup("ansible.builtin.password",
+  "secrets/netbox_db_password.txt", length=26) }}'
+...

@@ -1,0 +1,11 @@
+---
+patroni_db_api_endpoint: https://localhost:8008
+patroni_db_api_ca: /etc/patroni/patroni-ca.crt
+patroni_db_api_cert: /etc/patroni/patroni.crt
+patroni_db_api_key: /etc/patroni/patroni.key
+patroni_db_api_validate_certs: true
+
+patroni_db_users: {}
+patroni_db_add: {}
+patroni_db_privs: []
+...

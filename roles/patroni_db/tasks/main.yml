@@ -1,0 +1,75 @@
+---
+- name: Check patroni status
+  ansible.builtin.uri:
+    method: OPTIONS
+    url: '{{ patroni_db_api_endpoint }}/primary'
+    ca_path: '{{ patroni_db_api_ca }}'
+    client_cert: '{{ patroni_db_api_cert }}'
+    client_key: '{{ patroni_db_api_key }}'
+    remote_src: true
+    status_code: [200, 503]
+    validate_certs: '{{ patroni_db_api_validate_certs }}'
+  register: _patroni_db_status
+
+- name: Create users
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    name: '{{ item.key }}'
+    comment: '{{ item.value.comment | default(omit) }}'
+    configuration: '{{ item.value.configuration | default(omit) }}'
+    conn_limit: '{{ item.value.conn_limit | default(omit) }}'
+    encrypted: '{{ item.value.encrypted | default(omit) }}'
+    expires: '{{ item.value.expires | default(omit) }}'
+    no_password_changes: '{{ item.value.no_password_changes |
+      default(omit) }}'
+    password: '{{ item.value.password | default(omit) }}'
+    reset_unspecified_configuration: '{{
+      item.value.reset_unspecified_configuration | default(omit) }}'
+    role_attr_flags: '{{ item.value.role_attr_flags | default(omit) }}'
+    session_role: '{{ item.value.session_role | default(omit) }}'
+    state: present
+  loop: '{{ patroni_db_users | ansible.builtin.dict2items }}'
+  loop_control:
+    label: '{{ item.key }}'
+  when: _patroni_db_status.status == 200
+
+- name: Create databases
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    name: '{{ item.key }}'
+    comment: '{{ item.value.comment | default(omit) }}'
+    conn_limit: '{{ item.value.conn_limit | default(omit) }}'
+    encoding: '{{ item.value.encoding | default(omit) }}'
+    icu_locale: '{{ item.value.icu_locale | default(omit) }}'
+    lc_collate: '{{ item.value.lc_collate | default(omit) }}'
+    lc_ctype: '{{ item.value.lc_ctype | default(omit) }}'
+    locale_provider: '{{ item.value.locale_provider | default(omit) }}'
+    owner: '{{ item.value.owner | default(omit) }}'
+    tablespace: '{{ item.value.tablespace | default(omit) }}'
+    template: '{{ item.value.template | default(omit) }}'
+    state: present
+  loop: '{{ patroni_db_add | ansible.builtin.dict2items }}'
+  loop_control:
+    label: '{{ item.key }}'
+  when: _patroni_db_status.status == 200
+
+- name: Update privileges
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_privs:
+    login_db: '{{ item.login_db }}'
+    roles: '{{ item.roles }}'
+    grant_option: '{{ item.grant_option | default(omit) }}'
+    objs: '{{ item.objs | default(omit) }}'
+    privs: '{{ item.privs | default(omit) }}'
+    schema: '{{ item.schema | default(omit) }}'
+    session_role: '{{ item.session_role | default(omit) }}'
+    type: '{{ item.type | default(omit) }}'
+    state: present
+  loop: '{{ patroni_db_privs }}'
+  loop_control:
+    label: '{{ item.roles }} - {{ item.login_db }}'
+  when: _patroni_db_status.status == 200
+...
