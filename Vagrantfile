@@ -133,7 +133,7 @@ Vagrant.configure('2') do |config|
           ansible.compatibility_mode = '2.0'
           ansible.raw_arguments = ['--diff']
           # ansible.tags = ['lineinfile']
-          ansible.tags = ['haproxy']
+          ansible.tags = ['pgbouncer']
           # ansible.tags = ['tls_ca', 'tls_certs', 'haproxy']
           # ansible.skip_tags = ['apt_upgrade']
         end

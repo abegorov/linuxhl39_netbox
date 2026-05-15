@@ -1,0 +1,41 @@
+---
+pgbouncer_certs:
+  postgresql: /etc/pgbouncer
+
+pgbouncer_config:
+  /etc/pgbouncer/pg_hba.conf:
+    content: |
+      local pgbouncer postgres peer
+      local all postgres reject
+      local netbox netbox peer
+      local all all reject
+  /etc/pgbouncer/userlist.txt:
+    owner: postgres
+    mode: '0600'
+    content: |
+      "netbox" "{{ netbox_db_password }}"
+      "postgres" ""
+  /etc/pgbouncer/pgbouncer.ini:
+    content: |
+      [databases]
+      netbox = host=localhost port=5432
+      [pgbouncer]
+      admin_users = postgres
+      auth_file = /etc/pgbouncer/userlist.txt
+      auth_hba_file = /etc/pgbouncer/pg_hba.conf
+      auth_type = hba
+      default_pool_size = 20
+      listen_port = 5432
+      logfile = /var/log/postgresql/pgbouncer.log
+      max_client_conn = 100
+      pidfile = /var/run/postgresql/pgbouncer.pid
+      pool_mode = transaction
+      server_tls_ca_file = /etc/pgbouncer/postgresql-ca.crt
+      server_tls_cert_file = /etc/pgbouncer/postgresql.crt
+      server_tls_ciphers = secure
+      server_tls_key_file = /etc/pgbouncer/postgresql.key
+      server_tls_protocols = secure
+      server_tls_sslmode = verify-full
+      stats_users = postgres
+      unix_socket_dir = /var/run/postgresql
+...
