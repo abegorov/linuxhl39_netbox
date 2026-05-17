@@ -1,6 +1,4 @@
 ---
-ceph_bootstrap_host: '{{ groups["core"] | first }}'
-
 user_add_ceph:
   ceph-admin:
     create_home: true
@@ -9,6 +7,16 @@ user_add_ceph:
     update_password: on_create
     shell: /bin/bash
     system: false
+
+ceph_osd_wait_count: 2
+
+ceph_rgw_cert: '{{ lookup("ansible.builtin.file", ceph_rgw_cert_path) }}'
+ceph_rgw_cert_path: ./secrets/ceph-rgw/{{ inventory_hostname }}.crt
+ceph_rgw_key: '{{ lookup("ansible.builtin.file", ceph_rgw_key_path) }}'
+ceph_rgw_key_path: ./secrets/ceph-rgw/{{ inventory_hostname }}.key
+
+radosgw_admin_users:
+  netbox: --display-name=netbox
 
 ceph_config:
   /etc/sudoers.d/ceph-admin:
@@ -77,6 +85,10 @@ ceph_config:
         rgw_thread_pool_size: 16
       spec:
         rgw_frontend_type: beast
-        rgw_frontend_port: 8000
+        rgw_frontend_port: 443
+        rgw_frontend_ssl_certificate: |
+          {{ ceph_rgw_key | indent(4) }}
+          {{ ceph_rgw_cert | indent(4) }}
+        ssl: true
       ...
 ...
