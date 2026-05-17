@@ -7,8 +7,11 @@ pgbouncer_config:
     content: |
       local pgbouncer postgres peer
       local all postgres reject
-      local netbox netbox peer
+      local netbox netbox peer map=netbox_map
       local all all reject
+  /etc/pgbouncer/pg_ident.conf:
+    content: |
+      netbox_map root netbox
   /etc/pgbouncer/userlist.txt:
     owner: postgres
     mode: '0600'
@@ -23,6 +26,7 @@ pgbouncer_config:
       admin_users = postgres
       auth_file = /etc/pgbouncer/userlist.txt
       auth_hba_file = /etc/pgbouncer/pg_hba.conf
+      auth_ident_file = /etc/pgbouncer/pg_ident.conf
       auth_type = hba
       default_pool_size = 20
       listen_port = 5432

@@ -1,7 +1,7 @@
 ---
 s3_bucket_buckets:
   netbox-media:
-  netbox-static:
+  netbox-scripts:
 
 s3_bucket_access_key: '{{ netbox_s3_access_key }}'
 s3_bucket_secret_key: '{{ netbox_s3_secret_key }}'

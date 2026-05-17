@@ -1,34 +1,361 @@
 ---
-file_groups_netbox:
-  - paths:
-      - /etc/netbox
-      - /var/lib/netbox
+file_group_netbox:
+  - paths: [/etc/netbox]
     state: directory
     owner: root
     group: root
     mode: '0755'
   - paths: [/opt/netbox]
-    src: /opt/netbox
+    src: /opt/netbox-{{ netbox_version }}
     state: link
+  - paths: [/opt/netbox/netbox/netbox/configuration.py]
+    src: /etc/netbox/configuration.py
+    force: true
+    state: link
+
+user_add_netbox:
+  netbox:
+    create_home: true
+    home: /var/lib/netbox
+    skeleton: /dev/null
 
 netbox_s3_access_key: '{{ netbox_s3_userinfo["keys"][0].access_key }}'
 netbox_s3_secret_key: '{{ netbox_s3_userinfo["keys"][0].secret_key }}'
 netbox_s3_userinfo: '{{ lookup("ansible.builtin.file",
-  netbox_s3_userinfo_file) | ansible.builtin.from_json }}'
-netbox_s3_userinfo_file: ./secrets/netbox_rgw_userinfo.json
+  "secrets/netbox_rgw_userinfo.json") | ansible.builtin.from_json }}'
 netbox_version: '4.6.0'
 
-user_add_netbox:
-  netbox:
+netbox_superuser_password: '{{ lookup("ansible.builtin.password",
+  "secrets/netbox_superuser_password.txt", length=26,
+  chars=["ascii_letters", "digits", ".,-_"]) }}'
 
-unarchive_urls_override:
-  netbox.tar.gz:
-    checksum: >-
-      sha256:2060854d7a188d02bebdf9c437dfa3706b73b5e92966f467d96b877183d236d9
-    creates: /opt/netbox-{{ netbox_version }}/upgrade.sh
-    dest: /opt/
-    extra_opts: []
-    mode: null
-    url: https://github.com/netbox-community/netbox/archive/refs/tags/v{{
-      netbox_version }}.tar.gz
+netbox_secret_key: '{{ lookup("ansible.builtin.password",
+  "secrets/netbox_secret_key.txt", length=50) }}'
+netbox_api_token_pepper1: '{{ lookup("ansible.builtin.password",
+  "secrets/netbox_api_token_pepper1.txt", length=50) }}'
+netbox_api_token_pepper2: '{{ lookup("ansible.builtin.password",
+  "secrets/netbox_api_token_pepper1.txt", length=50) }}'
+netbox_api_token_pepper3: '{{ lookup("ansible.builtin.password",
+  "secrets/netbox_api_token_pepper1.txt", length=50) }}'
+
+netbox_config:
+  /opt/netbox/local_requirements.txt:
+    content: |
+      boto3
+      django-storages
+  /etc/netbox/gunicorn.py:
+    content: |
+      workers = 5
+      threads = 3
+      timeout = 120
+      max_requests = 5000
+      max_requests_jitter = 500
+  /etc/netbox/configuration.py:
+    owner: netbox
+    mode: '0400'
+    content: |
+      ALLOWED_HOSTS = ['*']
+      DATABASES = {
+          'default': {
+              'ENGINE': 'django.db.backends.postgresql',
+              'NAME': 'netbox',
+              'USER': 'netbox',
+              'PASSWORD': '{{ netbox_db_password }}',
+              'HOST': '/var/run/postgresql',
+              'PORT': 5432,
+              'CONN_MAX_AGE': 300,
+          }
+      }
+      REDIS = {
+          'tasks': {
+              'HOST': 'localhost',
+              'PORT': 6379,
+              'USERNAME': '',
+              'PASSWORD': '{{ redis_password }}',
+              'DATABASE': 0,
+              'SSL': False,
+          },
+          'caching': {
+              'HOST': 'localhost',
+              'PORT': 6379,
+              'USERNAME': '',
+              'PASSWORD': '{{ redis_password }}',
+              'DATABASE': 1,
+              'SSL': False,
+          }
+      }
+      SECRET_KEY = '{{ netbox_secret_key }}'
+      API_TOKEN_PEPPERS = {
+          1: '{{ netbox_api_token_pepper1 }}',
+          2: '{{ netbox_api_token_pepper2 }}',
+          3: '{{ netbox_api_token_pepper3 }}',
+      }
+      ADMINS = []
+      AUTH_PASSWORD_VALIDATORS = [
+          {
+              'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+              'OPTIONS': {
+                  'min_length': 16,
+              }
+          },
+      ]
+      BASE_PATH = ''
+      CORS_ORIGIN_ALLOW_ALL = False
+      CORS_ORIGIN_WHITELIST = []
+      CORS_ORIGIN_REGEX_WHITELIST = []
+      CSRF_COOKIE_NAME = 'csrftoken'
+      DEBUG = False
+      DEFAULT_LANGUAGE = 'ru-ru'
+      EMAIL = {
+          'SERVER': 'localhost',
+          'PORT': 25,
+          'USERNAME': '',
+          'PASSWORD': '',
+          'USE_SSL': False,
+          'USE_TLS': False,
+          'TIMEOUT': 10,
+          'FROM_EMAIL': '',
+      }
+      STREAMING_EXPORTS = True
+      EXEMPT_VIEW_PERMISSIONS = []
+      LOGGING = {}
+      LOGIN_PERSISTENCE = False
+      LOGIN_TIMEOUT = None
+      LOGIN_FORM_HIDDEN = False
+      LOGOUT_REDIRECT_URL = 'home'
+      METRICS_ENABLED = True
+      PLUGINS = []
+      REMOTE_AUTH_ENABLED = False
+      REMOTE_AUTH_BACKEND = 'netbox.authentication.RemoteUserBackend'
+      REMOTE_AUTH_HEADER = 'HTTP_REMOTE_USER'
+      REMOTE_AUTH_USER_FIRST_NAME = 'HTTP_REMOTE_USER_FIRST_NAME'
+      REMOTE_AUTH_USER_LAST_NAME = 'HTTP_REMOTE_USER_LAST_NAME'
+      REMOTE_AUTH_USER_EMAIL = 'HTTP_REMOTE_USER_EMAIL'
+      REMOTE_AUTH_AUTO_CREATE_USER = True
+      REMOTE_AUTH_DEFAULT_GROUPS = []
+      REMOTE_AUTH_DEFAULT_PERMISSIONS = {}
+      RELEASE_CHECK_URL = None
+      RQ_DEFAULT_TIMEOUT = 300
+      SESSION_COOKIE_NAME = 'sessionid'
+      SESSION_FILE_PATH = None
+      DISK_BASE_UNIT = 1024
+      RAM_BASE_UNIT = 1024
+      STORAGES = {
+          'default': {
+              'BACKEND': 'storages.backends.s3.S3Storage',
+              'OPTIONS': {
+                  'bucket_name': 'netbox-media',
+                  'access_key': '{{ netbox_s3_access_key }}',
+                  'secret_key': '{{ netbox_s3_secret_key }}',
+                  'endpoint_url': 'http://localhost:8000',
+                  'region_name': 'default',
+                  'location': '',
+              },
+          },
+          'staticfiles': {
+              'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+          },
+          'scripts': {
+              'BACKEND': 'storages.backends.s3.S3Storage',
+              'OPTIONS': {
+                  'bucket_name': 'netbox-media',
+                  'access_key': '{{ netbox_s3_access_key }}',
+                  'secret_key': '{{ netbox_s3_secret_key }}',
+                  'endpoint_url': 'http://localhost:8000',
+                  'region_name': 'default',
+                  'location': '',
+              },
+          },
+      }
+      TIME_ZONE = 'Europe/Moscow'
+  /etc/systemd/system/netbox.socket:
+    notify: Restart netbox socket
+    content: |
+      [Unit]
+      Description=NetBox WSGI Socket
+      Documentation=https://docs.netbox.dev/
+
+      [Socket]
+      ListenStream=/var/run/netbox.sock
+      SocketUser=angie
+      SocketGroup=angie
+      SocketMode=0660
+
+      [Install]
+      WantedBy=sockets.target
+  /etc/systemd/system/netbox.service:
+    content: |
+      [Unit]
+      Description=NetBox WSGI Service
+      Documentation=https://docs.netbox.dev/
+      Requires=netbox.socket
+      After=network-online.target
+      Wants=network-online.target
+
+      [Service]
+      Type=notify
+      NotifyAccess=main
+
+      User=netbox
+      Group=netbox
+      WorkingDirectory=/opt/netbox
+
+      ExecStart=/opt/netbox/venv/bin/gunicorn \
+        --pythonpath /opt/netbox/netbox \
+        --config /etc/netbox/gunicorn.py \
+        netbox.wsgi
+      ExecReload=/bin/kill -s HUP $MAINPID
+      KillMode=mixed
+      TimeoutStopSec=5
+
+      Restart=on-failure
+      RestartSec=30
+
+      PrivateTmp=true
+      ProtectHome=true
+      NoNewPrivileges=true
+      ProtectSystem=strict
+      ProtectControlGroups=true
+      ProtectKernelModules=true
+      ProtectKernelTunables=true
+      ProtectKernelLogs=true
+      ProtectClock=true
+      ProtectProc=invisible
+      ProtectHostname=true
+
+      RemoveIPC=true
+      CapabilityBoundingSet=
+      PrivateDevices=true
+      SystemCallArchitectures=native
+      MemoryDenyWriteExecute=true
+      RestrictNamespaces=true
+      RestrictSUIDSGID=true
+      LockPersonality=true
+      RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+      RestrictRealtime=true
+      PrivateUsers=true
+      ProcSubset=pid
+      SystemCallFilter=@system-service
+      SystemCallFilter=~@resources @privileged
+      UMask=7077
+
+      [Install]
+      WantedBy=multi-user.target
+  /etc/systemd/system/netbox-rq.service:
+    notify: Restart netbox-rq service
+    content: |
+      [Unit]
+      Description=NetBox Request Queue Worker
+      Documentation=https://docs.netbox.dev/
+      After=network-online.target
+      Wants=network-online.target
+
+      [Service]
+      Type=exec
+
+      User=netbox
+      Group=netbox
+      WorkingDirectory=/opt/netbox
+
+      ExecStart=/opt/netbox/venv/bin/python3 \
+        /opt/netbox/netbox/manage.py rqworker high default low
+
+      Restart=on-failure
+      RestartSec=30
+
+      PrivateTmp=true
+      ProtectHome=true
+      NoNewPrivileges=true
+      ProtectSystem=strict
+      ProtectControlGroups=true
+      ProtectKernelModules=true
+      ProtectKernelTunables=true
+      ProtectKernelLogs=true
+      ProtectClock=true
+      ProtectProc=invisible
+      ProtectHostname=true
+
+      RemoveIPC=true
+      CapabilityBoundingSet=
+      PrivateDevices=true
+      SystemCallArchitectures=native
+      MemoryDenyWriteExecute=true
+      RestrictNamespaces=true
+      RestrictSUIDSGID=true
+      LockPersonality=true
+      RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+      RestrictRealtime=true
+      PrivateUsers=true
+      ProcSubset=pid
+      SystemCallFilter=@system-service
+      SystemCallFilter=~@resources @privileged
+      UMask=7077
+
+      [Install]
+      WantedBy=multi-user.target
+  /etc/systemd/system/netbox-housekeeping.service:
+    notify: []
+    content: |
+      [Unit]
+      Description=NetBox Housekeeping Service
+      Documentation=https://docs.netbox.dev/
+      After=network-online.target
+      Wants=network-online.target
+
+      [Service]
+      Type=exec
+
+      User=netbox
+      Group=netbox
+      WorkingDirectory=/opt/netbox
+
+      ExecStart=/opt/netbox/venv/bin/python \
+        /opt/netbox/netbox/manage.py housekeeping
+
+      PrivateTmp=true
+      ProtectHome=true
+      NoNewPrivileges=true
+      ProtectSystem=strict
+      ProtectControlGroups=true
+      ProtectKernelModules=true
+      ProtectKernelTunables=true
+      ProtectKernelLogs=true
+      ProtectClock=true
+      ProtectProc=invisible
+      ProtectHostname=true
+
+      RemoveIPC=true
+      CapabilityBoundingSet=
+      PrivateDevices=true
+      SystemCallArchitectures=native
+      MemoryDenyWriteExecute=true
+      RestrictNamespaces=true
+      RestrictSUIDSGID=true
+      LockPersonality=true
+      RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+      RestrictRealtime=true
+      PrivateUsers=true
+      ProcSubset=pid
+      SystemCallFilter=@system-service
+      SystemCallFilter=~@resources @privileged
+      UMask=7077
+
+      [Install]
+      WantedBy=multi-user.target
+  /etc/systemd/system/netbox-housekeeping.timer:
+    notify: Restart netbox-housekeeping timer
+    content: |
+      [Unit]
+      Description=NetBox Housekeeping Timer
+      Documentation=https://docs.netbox.dev/
+      After=network-online.target
+      Wants=network-online.target
+
+      [Timer]
+      OnCalendar=daily
+      AccuracySec=1h
+      Persistent=true
+
+      [Install]
+      WantedBy=multi-user.target
 ...
