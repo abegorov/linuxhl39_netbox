@@ -1,0 +1,8 @@
+---
+netbox_config: {}
+netbox_dir: /opt/netbox
+
+netbox_superuser: admin
+netbox_superuser_email: root@localhost
+netbox_superuser_password: '{{ undef(hint="netbox_superuser_password") }}'
+...

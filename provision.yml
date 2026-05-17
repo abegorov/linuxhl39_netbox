@@ -87,4 +87,6 @@
       tags: [s3fs]
     - role: s3_bucket
       tags: [s3_bucket]
+    - role: netbox
+      tags: [netbox]
 ...

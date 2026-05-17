@@ -1,0 +1,33 @@
+---
+- name: Reload systemd daemon
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+
+- name: Enable and start netbox socket
+  ansible.builtin.systemd_service:
+    name: netbox.socket
+    enabled: true
+    state: started
+  ignore_errors: '{{ ansible_check_mode }}'
+
+- name: Enable and start netbox service
+  ansible.builtin.systemd_service:
+    name: netbox.service
+    enabled: true
+    state: started
+  ignore_errors: '{{ ansible_check_mode }}'
+
+- name: Enable and start netbox-rq service
+  ansible.builtin.systemd_service:
+    name: netbox-rq.service
+    enabled: true
+    state: started
+  ignore_errors: '{{ ansible_check_mode }}'
+
+- name: Enable and start netbox-housekeeping timer
+  ansible.builtin.systemd_service:
+    name: netbox-housekeeping.timer
+    enabled: true
+    state: started
+  ignore_errors: '{{ ansible_check_mode }}'
+...

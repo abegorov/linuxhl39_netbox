@@ -1,0 +1,10 @@
+---
+- name: Import config tasks
+  ansible.builtin.import_tasks: config.yml
+
+- name: Import services tasks
+  ansible.builtin.import_tasks: services.yml
+
+- name: Force all notified handlers to run
+  ansible.builtin.meta: flush_handlers
+...
