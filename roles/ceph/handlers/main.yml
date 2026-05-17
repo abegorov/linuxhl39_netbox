@@ -2,10 +2,6 @@
 - name: Apply ceph cluster spec
   run_once: true
   ansible.builtin.command: >-
-    cephadm shell
-    --mount {{ ceph_cluster_spec_file | ansible.builtin.quote }}:{{
-     ceph_cluster_spec_file | ansible.builtin.quote }}
-    --
     ceph orch apply
     --in-file {{ ceph_cluster_spec_file | ansible.builtin.quote }}
   changed_when: true

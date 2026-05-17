@@ -1,0 +1,23 @@
+---
+- name: Process config section {{ section.key }}
+  vars:
+    section_name: '{{ section.key | ansible.builtin.quote }}'
+    value_name: '{{ item.key | ansible.builtin.quote }}'
+    value: '{{ item.value | ansible.builtin.quote }}'
+  ansible.builtin.shell: |
+    set -e
+    VALUE="$(ceph config get {{ section_name }} {{ value_name }})"
+    if [ "${VALUE}" != {{ value }} ]; then
+    {% if not ansible_check_mode %}
+      ceph config set {{ section_name }} {{ value_name }} {{ value }}
+    {% endif %}
+      exit 10
+    fi
+  changed_when: _ceph_config_section_update.rc == 10
+  check_mode: false
+  failed_when: _ceph_config_section_update.rc not in [0, 10]
+  register: _ceph_config_section_update
+  loop: '{{ section.value | ansible.builtin.dict2items }}'
+  loop_control:
+    label: '{{ item.key }}'
+...

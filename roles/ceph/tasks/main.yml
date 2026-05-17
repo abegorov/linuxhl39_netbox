@@ -27,23 +27,6 @@
     state: present
   when: hostvars[ceph_bootstrap_host]._ceph_pub.content is defined
 
-- name: Import config role
-  ansible.builtin.import_role:
-    name: config
-    public: false
-  vars:
-    config_content: '{{ ceph_config }}'
-    config_notify: Apply ceph cluster spec
-
-- name: Force all notified handlers to run at this point
-  ansible.builtin.meta: flush_handlers
-
-- name: Wait for osd creation
-  ansible.builtin.command: ceph osd ls
-  changed_when: false
-  delay: '{{ ceph_osd_wait_delay }}'
-  register: _ceph_osd_list
-  retries: '{{ ceph_osd_wait_retries }}'
-  until: _ceph_osd_list.stdout_lines | length >= ceph_osd_wait_count
-  when: inventory_hostname == ceph_bootstrap_host
+- name: Import config tasks
+  ansible.builtin.import_tasks: config.yml
 ...

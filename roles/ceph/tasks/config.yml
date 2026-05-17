@@ -1,0 +1,29 @@
+---
+- name: Import config role
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ ceph_config }}'
+    config_notify: Apply ceph cluster spec
+
+- name: Force all notified handlers to run at this point
+  ansible.builtin.meta: flush_handlers
+
+- name: Wait for osd creation
+  ansible.builtin.command: ceph osd ls
+  changed_when: false
+  delay: '{{ ceph_osd_wait_delay }}'
+  register: _ceph_osd_list
+  retries: '{{ ceph_osd_wait_retries }}'
+  until: _ceph_osd_list.stdout_lines | length >= ceph_osd_wait_count
+  when: inventory_hostname == ceph_bootstrap_host
+
+- name: Process config sections
+  ansible.builtin.include_tasks: section.yml
+  loop: '{{ ceph_config_sections | ansible.builtin.dict2items }}'
+  loop_control:
+    label: '{{ section.key }}'
+    loop_var: section
+  when: inventory_hostname == ceph_bootstrap_host
+...
