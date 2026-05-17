@@ -14,9 +14,7 @@
       tags: [apt_sources]
     - role: apt_upgrade
       tags: [apt_upgrade]
-    - role: apt_packages
-      apt_packages_add: '{{ apt_packages_bootstrap }}'
-      tags: [apt_packages_bootstrap]
+
     - role: ini_config
       ini_config_files: '{{ ini_config_bootstrap }}'
       tags: [ini_config_bootstrap]
@@ -84,4 +82,9 @@
       tags: [haproxy]
     - role: pgbouncer
       tags: [pgbouncer]
+    - role: lineinfile
+      lineinfile_files: '{{ lineinfile_s3fs }}'
+      tags: [s3fs]
+    - role: s3_bucket
+      tags: [s3_bucket]
 ...

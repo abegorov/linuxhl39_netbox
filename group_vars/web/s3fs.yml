@@ -1,0 +1,13 @@
+---
+lineinfile_s3fs:
+  /root/.bashrc:
+    - regexp: '^export AWS_ACCESS_KEY_ID='
+      line: export AWS_ACCESS_KEY_ID='{{ netbox_rgw_access_key }}'
+    - regexp: '^export AWS_SECRET_ACCESS_KEY='
+      line: export AWS_SECRET_ACCESS_KEY='{{ netbox_rgw_secret_key }}'
+    - regexp: '^export S3FS_ARGS='
+      line: export S3FS_ARGS='-o url=http://localhost:8000
+        -o use_path_request_style'
+    - regexp: '^alias s3fs='
+      line: alias s3fs='s3fs ${S3FS_ARGS:-}'
+...

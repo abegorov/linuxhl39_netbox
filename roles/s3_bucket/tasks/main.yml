@@ -1,0 +1,15 @@
+---
+- name: Process s3 buckets
+  run_once: '{{ s3_bucket_run_once }}'
+  amazon.aws.s3_bucket:
+    name: '{{ item.key }}'
+    ceph: '{{ s3_bucket_ceph }}'
+    endpoint_url: '{{ s3_bucket_endpoint_url }}'
+    access_key: '{{ s3_bucket_access_key }}'
+    secret_key: '{{ s3_bucket_secret_key }}'
+    state: '{{ item.value.state | default(omit) }}'
+  loop: '{{ s3_bucket_buckets | ansible.builtin.dict2items }}'
+  loop_control:
+    label: '{{ item.key }}'
+  no_log: '{{ not s3_bucket_debug }}'
+...

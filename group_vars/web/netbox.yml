@@ -1,6 +1,4 @@
 ---
-netbox_version: '4.6.0'
-
 file_groups_netbox:
   - paths:
       - /etc/netbox
@@ -12,6 +10,13 @@ file_groups_netbox:
   - paths: [/opt/netbox]
     src: /opt/netbox
     state: link
+
+netbox_s3_access_key: '{{ netbox_s3_userinfo["keys"][0].access_key }}'
+netbox_s3_secret_key: '{{ netbox_s3_userinfo["keys"][0].secret_key }}'
+netbox_s3_userinfo: '{{ lookup("ansible.builtin.file",
+  netbox_s3_userinfo_file) | ansible.builtin.from_json }}'
+netbox_s3_userinfo_file: ./secrets/netbox_rgw_userinfo.json
+netbox_version: '4.6.0'
 
 user_add_netbox:
   netbox:

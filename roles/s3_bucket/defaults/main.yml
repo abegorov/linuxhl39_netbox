@@ -1,0 +1,11 @@
+---
+s3_bucket_debug: '{{ debug | default(false) }}'
+
+s3_bucket_access_key: '{{ omit }}'
+s3_bucket_secret_key: '{{ omit }}'
+
+s3_bucket_buckets: {}
+s3_bucket_ceph: true
+s3_bucket_endpoint_url: http://localhost:8000
+s3_bucket_run_once: true
+...
