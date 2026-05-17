@@ -21,7 +21,7 @@
 
 - name: Update ceph admin authorized keys
   ansible.posix.authorized_key:
-    user: ceph-admin
+    user: '{{ ceph_ssh_user }}'
     key: '{{ hostvars[ceph_bootstrap_host]._ceph_pub.content |
       ansible.builtin.b64decode }}'
     state: present
@@ -37,4 +37,13 @@
 
 - name: Force all notified handlers to run at this point
   ansible.builtin.meta: flush_handlers
+
+- name: Wait for osd creation
+  ansible.builtin.command: ceph osd ls
+  changed_when: false
+  delay: '{{ ceph_osd_wait_delay }}'
+  register: _ceph_osd_list
+  retries: '{{ ceph_osd_wait_retries }}'
+  until: _ceph_osd_list.stdout_lines | length >= ceph_osd_wait_count
+  when: inventory_hostname == ceph_bootstrap_host
 ...
