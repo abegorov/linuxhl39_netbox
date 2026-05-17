@@ -1,5 +1,6 @@
 ---
 haproxy_certs:
+  ceph-rgw: /etc/haproxy
   patroni: /etc/haproxy
   redis: /etc/haproxy
 
@@ -123,5 +124,17 @@ haproxy_config:
         tcp-check expect string +OK
       {% for server in groups['db'] %}
         server {{ server }} {{ hostvars[server].ip_address }}:6379
+      {% endfor %}
+      listen rados-gateway
+        bind 127.0.0.1:8000
+        bind [::1]:8000
+        mode http
+        balance roundrobin
+        option httpchk
+        http-check send meth GET uri /
+        http-check expect status 200
+        default-server inter 100 fall 3 rise 2 on-marked-down shutdown-sessions check ssl verify required ca-file "ceph-rgw-ca.crt"
+      {% for server in groups['core'] %}
+        server {{ server }} {{ hostvars[server].ip_address }}:443
       {% endfor %}
 ...
