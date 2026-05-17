@@ -1,0 +1,10 @@
+---
+- name: Include user tasks
+  ansible.builtin.include_tasks: user.yml
+  when: inventory_hostname == radosgw_admin_host
+  loop: '{{ radosgw_admin_users |
+    ansible.builtin.dict2items(key_name="uid", value_name="opts") }}'
+  loop_control:
+    label: '{{ user.uid }}'
+    loop_var: user
+...

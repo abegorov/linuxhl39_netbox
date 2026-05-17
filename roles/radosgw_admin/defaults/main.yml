@@ -1,0 +1,6 @@
+---
+radosgw_admin_debug: '{{ debug | default(false) }}'
+radosgw_admin_host: '{{ ansible_play_hosts | first }}'
+radosgw_admin_user_file: ./secrets/{{ user.uid }}_rgw_userinfo.json
+radosgw_admin_users: {}
+...

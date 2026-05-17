@@ -1,0 +1,26 @@
+---
+- name: Get radosgw user info
+  ansible.builtin.command: radosgw-admin user info
+    --uid={{ user.uid | ansible.builtin.quote }}
+  changed_when: false
+  check_mode: false
+  failed_when: _radosgw_admin_user_info.rc not in [0, 22]
+  register: _radosgw_admin_user_info
+
+- name: Create radosgw user
+  ansible.builtin.command: radosgw-admin user create
+    --uid={{ user.uid | ansible.builtin.quote }} {{ user.opts }}
+  changed_when: true
+  when: _radosgw_admin_user_info.rc == 22
+  register: _radosgw_admin_user_create
+
+- name: Save radosgw user {{ user.uid }}
+  become: false
+  delegate_to: localhost
+  ansible.builtin.copy:
+    content: '{{ _radosgw_admin_user_create.stdout |
+      default(_radosgw_admin_user_info.stdout) }}'
+    dest: '{{ radosgw_admin_user_file }}'
+    mode: '0600'
+  no_log: '{{ not radosgw_admin_debug }}'
+...
