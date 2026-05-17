@@ -215,6 +215,7 @@ netbox_config:
       ProtectHome=true
       NoNewPrivileges=true
       ProtectSystem=strict
+      ReadWritePaths=/var/lib/netbox
       ProtectControlGroups=true
       ProtectKernelModules=true
       ProtectKernelTunables=true
@@ -267,6 +268,7 @@ netbox_config:
       ProtectHome=true
       NoNewPrivileges=true
       ProtectSystem=strict
+      ReadWritePaths=/var/lib/netbox
       ProtectControlGroups=true
       ProtectKernelModules=true
       ProtectKernelTunables=true
@@ -316,6 +318,7 @@ netbox_config:
       ProtectHome=true
       NoNewPrivileges=true
       ProtectSystem=strict
+      ReadWritePaths=/var/lib/netbox
       ProtectControlGroups=true
       ProtectKernelModules=true
       ProtectKernelTunables=true
