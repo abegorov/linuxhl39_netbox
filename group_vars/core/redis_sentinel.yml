@@ -52,18 +52,18 @@ redis_sentinel_config:
       acllog-max-len 128
       bind 127.0.0.1 {{ ip_address }} -::1
       daemonize yes
-      dir /var/lib/redis
+      dir "/var/lib/redis"
       latency-tracking-info-percentiles 50 99 99.9
-      logfile /var/log/redis/redis-sentinel.log
+      logfile "/var/log/redis/redis-sentinel.log"
       loglevel notice
       masterauth "{{ redis_password }}"
-      pidfile /run/sentinel/redis-sentinel.pid
+      pidfile "/run/sentinel/redis-sentinel.pid"
       port 0
       protected-mode yes
       requirepass "{{ redis_sentinel_password }}"
       sentinel announce-hostnames no
-      sentinel announce-ip {{ ip_address }}
-      sentinel auth-pass mymaster "{{ redis_password }}"
+      sentinel announce-ip "{{ ip_address }}"
+      sentinel auth-pass mymaster {{ redis_password }}
       sentinel config-epoch mymaster 0
       sentinel current-epoch 0
       sentinel deny-scripts-reconfig yes
@@ -73,17 +73,17 @@ redis_sentinel_config:
       sentinel monitor mymaster {{ hostvars[redis_master].ip_address }} 6379 2
       sentinel myid {{ redis_sentinel_myid }}
       sentinel resolve-hostnames no
-      sentinel sentinel-pass "{{ redis_sentinel_password }}"
+      sentinel sentinel-pass {{ redis_sentinel_password }}
       supervised systemd
       tcp-backlog 511
       tls-auth-clients yes
-      tls-ca-cert-file /etc/redis/redis-ca.crt
-      tls-cert-file /etc/redis/redis.crt
-      tls-ciphers {{ redis_sentinel_tls_ciphers | join(':') }}
-      tls-ciphersuites {{ redis_sentinel_tls_ciphersuites | join(':') }}
+      tls-ca-cert-file "/etc/redis/redis-ca.crt"
+      tls-cert-file "/etc/redis/redis.crt"
+      tls-ciphers "{{ redis_sentinel_tls_ciphers | join(':') }}"
+      tls-ciphersuites "{{ redis_sentinel_tls_ciphersuites | join(':') }}"
       tls-cluster yes
-      tls-dh-params-file /etc/redis/dhparam
-      tls-key-file /etc/redis/redis.key
+      tls-dh-params-file "/etc/redis/dhparam"
+      tls-key-file "/etc/redis/redis.key"
       tls-port 26379
       tls-prefer-server-ciphers no
       tls-protocols "TLSv1.2 TLSv1.3"
