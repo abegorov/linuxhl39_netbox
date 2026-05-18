@@ -12,6 +12,7 @@ pgbouncer_config:
   /etc/pgbouncer/pg_ident.conf:
     content: |
       netbox_map root netbox
+      netbox_map netbox netbox
   /etc/pgbouncer/userlist.txt:
     owner: postgres
     mode: '0600'
