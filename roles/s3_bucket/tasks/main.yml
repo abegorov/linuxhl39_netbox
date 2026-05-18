@@ -7,6 +7,9 @@
     endpoint_url: '{{ s3_bucket_endpoint_url }}'
     access_key: '{{ s3_bucket_access_key }}'
     secret_key: '{{ s3_bucket_secret_key }}'
+    acl: '{{ item.value.acl | default(omit) }}'
+    policy: '{{ item.value.policy | default(omit) }}'
+    public_access: '{{ item.value.public_access | default(omit) }}'
     state: '{{ item.value.state | default(omit) }}'
   loop: '{{ s3_bucket_buckets | ansible.builtin.dict2items }}'
   loop_control:
