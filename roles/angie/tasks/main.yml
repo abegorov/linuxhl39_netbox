@@ -1,0 +1,30 @@
+---
+- name: Import certs role
+  ansible.builtin.import_role:
+    name: tls_copy
+    public: false
+  vars:
+    tls_copy_certs: '{{ angie_certs }}'
+    tls_copy_cert_chain: true
+    tls_copy_key_owner: angie
+    tls_copy_notify: Reload angie service
+
+- name: Import config role
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ angie_config }}'
+    config_notify: Reload angie service
+
+- name: Enable and start angie service
+  ansible.builtin.systemd_service:
+    name: angie.service
+    enabled: true
+    daemon_reload: true
+    state: started
+  ignore_errors: '{{ ansible_check_mode }}'
+
+- name: Force all notified handlers to run
+  ansible.builtin.meta: flush_handlers
+...

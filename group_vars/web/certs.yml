@@ -3,4 +3,16 @@ tls_certs_certs:
   patroni:
   postgresql:
   redis:
+  web:
+    not_after: 20270517000000Z
+    not_before: 20260517000000Z
+    subject_alt_name:
+      - 'DNS:netbox.otus.abegorov.ru'
+      - 'DNS:{{ inventory_hostname }}'
+      - 'DNS:localhost'
+      - 'IP:{{ ip_address }}'
+      - 'IP:192.168.56.30'
+      - 'IP:192.168.56.31'
+      - 'IP:192.168.56.32'
+      - 'IP:127.0.0.1'
 ...

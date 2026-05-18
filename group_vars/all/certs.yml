@@ -7,4 +7,5 @@ tls_ca_certs:
   patroni:
   postgresql:
   redis:
+  web:
 ...

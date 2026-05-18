@@ -1,0 +1,188 @@
+---
+file_group_angie:
+  - paths: [/etc/angie/certs]
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+angie_certs:
+  web: /etc/angie/certs
+
+angie_access_logs:
+  - /var/log/angie/access.log  main
+angie_error_logs:
+  - /var/log/angie/error.log notice
+
+angie_ssl_ciphers:
+  - ECDHE-ECDSA-AES128-GCM-SHA256
+  - ECDHE-RSA-AES128-GCM-SHA256
+  - ECDHE-ECDSA-AES256-GCM-SHA384
+  - ECDHE-RSA-AES256-GCM-SHA384
+  - ECDHE-ECDSA-CHACHA20-POLY1305
+  - ECDHE-RSA-CHACHA20-POLY1305
+  - DHE-RSA-AES128-GCM-SHA256
+  - DHE-RSA-AES256-GCM-SHA384
+  - DHE-RSA-CHACHA20-POLY1305
+
+angie_config:
+  # https://ssl-config.mozilla.org/ffdhe2048.txt
+  /etc/angie/dhparam:
+    content: |
+      -----BEGIN DH PARAMETERS-----
+      MIIBCAKCAQEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz
+      +8yTnc4kmz75fS/jY2MMddj2gbICrsRhetPfHtXV/WVhJDP1H18GbtCFY2VVPe0a
+      87VXE15/V8k1mE8McODmi3fipona8+/och3xWKE2rec1MKzKT0g6eXq8CrGCsyT7
+      YdEIqUuyyOP7uWrat2DX9GgdT0Kj3jlN9K5W7edjcrsZCwenyO4KbXCeAvzhzffi
+      7MA0BM0oNC9hkXL+nOmFg/+OTxIy7vKBg8P+OxtMb61zO7X8vC7CIAXFjvGDfRaD
+      ssbzSibBsu/6iGtCOGEoXJf//////////wIBAg==
+      -----END DH PARAMETERS-----
+  /etc/angie/http.d/default.conf:
+    content: |
+      server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        return 301 https://$host$request_uri;
+      }
+  /etc/angie/http.d/metrics.conf:
+    content: |
+      include prometheus_all.conf;
+
+      server {
+        listen {{ ip_address }}:9080 default_server reuseport;
+        http2 on;
+
+        location = /metrics {
+          prometheus all;
+        }
+      }
+  /etc/angie/http.d/netbox.conf:
+    content: |
+      upstream s3_upstream {
+      {% for server in groups['core'] %}
+        server {{ hostvars[server].ip_address }}:443 max_fails=1 fail_timeout=10;
+      {% endfor %}
+      }
+      server {
+        listen 443 default_server reuseport ssl;
+        listen [::]:443 default_server reuseport ssl;
+        http2 on;
+
+        ssl_certificate     certs/web.crt;
+        ssl_certificate_key certs/web.key;
+
+        client_max_body_size 25m;
+
+        location /s3/ {
+          limit_except GET { deny all; }
+          proxy_pass https://s3_upstream;
+          proxy_set_header X-Forwarded-Host $http_host;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Real-IP $remote_addr;
+          rewrite ^/s3/(.*)$ /$1 break;
+        }
+
+        location /static/ {
+          alias /opt/netbox/netbox/static/;
+        }
+
+        location / {
+          proxy_pass http://unix:/var/run/netbox.sock;
+          proxy_set_header X-Forwarded-Host $http_host;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+      }
+  /etc/angie/angie.conf:
+    content: |
+      user  angie;
+      worker_processes  auto;
+      worker_rlimit_nofile 65536;
+
+      error_log  /var/log/angie/error.log notice;
+      pid        /run/angie.pid;
+
+      events {
+        worker_connections  65536;
+      }
+
+
+      http {
+        include       mime.types;
+        default_type  application/octet-stream;
+
+        log_format  main
+          '$remote_addr - $remote_user [$time_local] "$request" '
+          '$status $body_bytes_sent "$http_referer" '
+          '"$http_user_agent" "$http_x_forwarded_for"';
+
+        log_format  extended
+          '$remote_addr - $remote_user [$time_local] "$request" '
+          '$status $body_bytes_sent "$http_referer" rt="$request_time" '
+          '"$http_user_agent" "$http_x_forwarded_for" '
+          'h="$host" sn="$server_name" ru="$request_uri" u="$uri" '
+          'ucs="$upstream_cache_status" ua="$upstream_addr" us="$upstream_status" '
+          'uct="$upstream_connect_time" urt="$upstream_response_time"';
+
+        log_format  json_extended escape=json
+          '{'
+            '"remote_addr":"$remote_addr",'
+            '"remote_user":"$remote_user",'
+            '"time_local":"$time_local",'
+            '"request":"$request",'
+            '"status":$status,'
+            '"body_bytes_sent":$body_bytes_sent,'
+            '"http_referer":"$http_referer",'
+            '"request_time":$request_time,'
+            '"http_user_agent":"$http_user_agent",'
+            '"http_x_forwarded_for":"$http_x_forwarded_for",'
+            '"request_host":"$host",'
+            '"server_name":"$server_name",'
+            '"request_uri":"$request_uri",'
+            '"uri":"$uri",'
+            '"upstream_cache_status":"$upstream_cache_status",'
+            '"upstream_addr":"$upstream_addr",'
+            '"upstream_status":"$upstream_status",'
+            '"upstream_connect_time":"$upstream_connect_time",'
+            '"upstream_response_time":"$upstream_response_time"'
+          '}';
+
+          access_log  /var/log/angie/access.log  main;
+
+          sendfile    on;
+          tcp_nopush  on;
+          tcp_nodelay on;
+
+          keepalive_timeout  65;
+
+          ssl_protocols TLSv1.2 TLSv1.3;
+          ssl_ecdh_curve X25519:prime256v1:secp384r1;
+          ssl_ciphers {{ angie_ssl_ciphers | join(':') }};
+          ssl_prefer_server_ciphers off;
+          ssl_session_timeout 1d;
+          ssl_session_cache shared:MozSSL:10m;
+          ssl_dhparam "dhparam";
+
+          gzip  on;
+          gzip_types  text/plain text/css text/xml application/javascript
+            application/json image/x-icon image/svg+xml;
+          gzip_comp_level  5;
+          gzip_proxied  any;
+          gzip_min_length  1000;
+          gzip_vary  on;
+
+          proxy_connect_timeout 100ms;
+          proxy_next_upstream error timeout http_500 http_502 http_503 http_504;
+
+          proxy_http_version 1.1;
+          proxy_redirect off;
+          proxy_set_header Connection "";
+          proxy_set_header Host $host;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Host $server_name;
+          proxy_set_header X-Real-IP $remote_addr;
+
+          include http.d/*.conf;
+      }
+...

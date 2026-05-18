@@ -89,4 +89,6 @@
       tags: [s3_bucket]
     - role: netbox
       tags: [netbox]
+    - role: angie
+      tags: [angie]
 ...
