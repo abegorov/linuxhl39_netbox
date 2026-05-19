@@ -93,4 +93,7 @@
       tags: [netbox]
     - role: angie
       tags: [angie]
+    - role: keepalived
+      when: not yandex_cloud | default(false)
+      tags: [keepalived]
 ...

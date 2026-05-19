@@ -1,0 +1,20 @@
+---
+- name: Import config role
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ keepalived_config }}'
+    config_notify: Reload keepalived service
+
+- name: Enable and start keepalived service
+  ansible.builtin.systemd_service:
+    name: keepalived.service
+    daemon_reload: true
+    enabled: true
+    state: started
+  ignore_errors: '{{ ansible_check_mode }}'
+
+- name: Force all notified handlers to run
+  ansible.builtin.meta: flush_handlers
+...
