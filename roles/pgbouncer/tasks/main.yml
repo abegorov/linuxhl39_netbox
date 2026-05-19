@@ -6,7 +6,7 @@
   vars:
     tls_copy_certs: '{{ pgbouncer_certs }}'
     tls_copy_key_owner: postgres
-    tls_copy_notify: Reload pgbouncer service
+    tls_copy_notify: Restart pgbouncer service
 
 - name: Import config role
   ansible.builtin.import_role:
@@ -14,16 +14,15 @@
     public: false
   vars:
     config_content: '{{ pgbouncer_config }}'
-    config_notify: Reload pgbouncer service
+    config_notify: Restart pgbouncer service
+
+- name: Force all notified handlers to run
+  ansible.builtin.meta: flush_handlers
 
 - name: Enable and start pgbouncer service
   ansible.builtin.systemd_service:
     name: pgbouncer.service
     enabled: true
-    daemon_reload: true
     state: started
   ignore_errors: '{{ ansible_check_mode }}'
-
-- name: Force all notified handlers to run
-  ansible.builtin.meta: flush_handlers
 ...
