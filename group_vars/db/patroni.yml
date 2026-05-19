@@ -215,7 +215,6 @@ patroni_config:
           vacuum_cost_limit: 10000
           commit_delay: 20
           commit_siblings: 10
-          promote_trigger_file: promote.signal
           max_standby_archive_delay: 10min
           max_standby_streaming_delay: 3min
           wal_receiver_status_interval: 1s
