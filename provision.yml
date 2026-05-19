@@ -12,9 +12,11 @@
       tags: [wait_for_connection]
     - role: apt_sources
       tags: [apt_sources]
+    - role: apt_packages
+      apt_packages_add: '{{ apt_packages_bootstrap }}'
+      tags: [apt_packages_bootstrap]
     - role: apt_upgrade
       tags: [apt_upgrade]
-
     - role: ini_config
       ini_config_files: '{{ ini_config_bootstrap }}'
       tags: [ini_config_bootstrap]

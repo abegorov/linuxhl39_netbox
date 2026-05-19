@@ -1,4 +1,3 @@
 ---
-apt_packages_bootstrap: []
 ini_config_bootstrap: {}
 ...

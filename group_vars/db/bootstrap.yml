@@ -1,5 +1,5 @@
 ---
-apt_packages_bootstrap:
+apt_packages_bootstrap_override:
   - postgresql-common
 ini_config_bootstrap:
   /etc/postgresql-common/createcluster.conf:

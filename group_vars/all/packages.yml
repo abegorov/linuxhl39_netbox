@@ -4,6 +4,10 @@ apt_packages_add_default:
   - bash-completion
   - chrony
   - filebeat
-  - update-notifier-common
 apt_packages_add_override: []
+apt_packages_bootstrap: '{{ apt_packages_bootstrap_default +
+  apt_packages_bootstrap_override }}'
+apt_packages_bootstrap_default:
+  - update-notifier-common
+apt_packages_bootstrap_override: []
 ...
