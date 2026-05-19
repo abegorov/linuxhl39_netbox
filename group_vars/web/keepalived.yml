@@ -1,0 +1,37 @@
+---
+keepalived_config:
+  /etc/keepalived/keepalived.conf:
+    content: |
+      global_defs {
+        vrrp_version 3
+        max_auto_priority
+        vrrp_priority -20
+        checker_priority -20
+        bfd_priority -20
+        vrrp_no_swap
+        checker_no_swap
+        bfd_no_swap
+        reload_check_config
+      }
+
+      vrrp_track_process ANGIE {
+        process angie
+      }
+
+      vrrp_instance VRRP_30 {
+        state BACKUP
+        interface eth2
+        priority {{ 150 - groups['web'].index(inventory_hostname) }}
+        virtual_router_id 30
+        advert_int 0.1
+        mcast_src_ip {{ ip_address_external }}
+        accept
+        nopreempt
+        virtual_ipaddress {
+          192.168.56.30/24 dev eth2
+        }
+        track_process {
+          ANGIE
+        }
+      }
+...

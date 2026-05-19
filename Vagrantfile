@@ -99,8 +99,9 @@ GROUPS = {
 MACHINES = GROUPS.values.each_with_object({}) { |m, o| o.merge!(m) }
 ANSIBLE_GROUPS = GROUPS.to_h{ |k, v| [k, v.keys()] }
 ANSIBLE_HOSTVARS = MACHINES.each_with_object({}) {
-  |kv, obj| obj[kv[0]] = {
-    'ip_address' => kv[1][:intnets][:"#{PRJ}"][:ip]
+  |(name, config), obj| obj[name] = {
+    'ip_address' => config.dig(:intnets, :"#{PRJ}", :ip),
+    'ip_address_external' => config.dig(:networks, :private_network, :ip)
   }
 }
 
@@ -151,7 +152,7 @@ Vagrant.configure('2') do |config|
           ansible.compatibility_mode = '2.0'
           ansible.raw_arguments = ['--diff']
           # ansible.tags = ['lineinfile']
-          # ansible.tags = ['netbox']
+          # ansible.tags = ['keepalived']
           # ansible.tags = ['tls_ca', 'tls_certs', 'haproxy']
           # ansible.skip_tags = ['apt_upgrade']
         end
