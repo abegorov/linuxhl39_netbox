@@ -3,6 +3,7 @@
   ansible.builtin.file:
     path: '{{ item }}'
     src: '{{ filegroup.src | default(omit) }}'
+    follow: '{{ filegroup.follow | default(omit) }}'
     force: '{{ filegroup.force | default(omit) }}'
     state: '{{ filegroup.state | default(omit) }}'
     owner: '{{ filegroup.owner | default(omit) }}'
