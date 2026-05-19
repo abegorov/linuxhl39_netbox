@@ -6,6 +6,5 @@ apt_packages_add_override:
   - grafana
   - kibana
   - haproxy
-  - keepalived
   - pgbouncer
 ...
