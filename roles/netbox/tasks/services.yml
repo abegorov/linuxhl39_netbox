@@ -1,8 +1,4 @@
 ---
-- name: Reload systemd daemon
-  ansible.builtin.systemd_service:
-    daemon_reload: true
-
 - name: Enable and start netbox socket
   ansible.builtin.systemd_service:
     name: netbox.socket

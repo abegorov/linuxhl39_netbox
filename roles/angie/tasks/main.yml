@@ -17,14 +17,13 @@
     config_content: '{{ angie_config }}'
     config_notify: Reload angie service
 
+- name: Force all notified handlers to run
+  ansible.builtin.meta: flush_handlers
+
 - name: Enable and start angie service
   ansible.builtin.systemd_service:
     name: angie.service
     enabled: true
-    daemon_reload: true
     state: started
   ignore_errors: '{{ ansible_check_mode }}'
-
-- name: Force all notified handlers to run
-  ansible.builtin.meta: flush_handlers
 ...

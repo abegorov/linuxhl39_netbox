@@ -2,6 +2,7 @@
 - name: Reload angie service
   ansible.builtin.systemd_service:
     name: angie.service
+    daemon_reload: true
     state: reloaded
   throttle: 1
   ignore_errors: '{{ ansible_check_mode }}'

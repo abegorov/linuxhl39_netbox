@@ -2,24 +2,28 @@
 - name: Restart netbox socket
   ansible.builtin.systemd_service:
     name: netbox.socket
+    daemon_reload: true
     state: restarted
   ignore_errors: '{{ ansible_check_mode }}'
 
 - name: Restart netbox service
   ansible.builtin.systemd_service:
     name: netbox.service
+    daemon_reload: true
     state: restarted
   ignore_errors: '{{ ansible_check_mode }}'
 
 - name: Restart netbox-rq service
   ansible.builtin.systemd_service:
     name: netbox-rq.service
+    daemon_reload: true
     state: restarted
   ignore_errors: '{{ ansible_check_mode }}'
 
 - name: Restart netbox-housekeeping timer
   ansible.builtin.systemd_service:
     name: netbox-housekeeping.timer
+    daemon_reload: true
     state: restarted
   ignore_errors: '{{ ansible_check_mode }}'
 ...
