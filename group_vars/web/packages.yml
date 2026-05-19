@@ -8,6 +8,8 @@ apt_packages_add_override:
   - keepalived
   - pgbouncer
   - postgresql-client-{{ postgresql_version }}
+  - s3fs
+  - telnet
   - python3
   - python3-pip
   - python3-venv
