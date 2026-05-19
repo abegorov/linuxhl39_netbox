@@ -8,8 +8,10 @@ file_group_netbox:
   - paths: [/opt/netbox]
     src: /opt/netbox-{{ netbox_version }}
     state: link
-  - paths: [/opt/netbox/netbox/netbox/configuration.py]
+  - paths:
+      - /opt/netbox-{{ netbox_version }}/netbox/netbox/configuration.py
     src: /etc/netbox/configuration.py
+    follow: false
     force: true
     state: link
 
