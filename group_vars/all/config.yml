@@ -10,7 +10,8 @@ ini_config_files: '{{ {} |
   *query("ansible.builtin.varnames", "^ini_config_file_.+"))) }}'
 lineinfile_files: '{{ {} |
   ansible.builtin.combine(*query("ansible.builtin.vars",
-  *query("ansible.builtin.varnames", "^lineinfile_file_.+"))) }}'
+  *query("ansible.builtin.varnames", "^lineinfile_file_.+")),
+  list_merge="append") }}'
 user_add: '{{ {} |
   ansible.builtin.combine(*query("ansible.builtin.vars",
   *query("ansible.builtin.varnames", "^user_add_.+"))) }}'
