@@ -16,7 +16,10 @@
     config_content: '{{ patroni_config }}'
     config_notify: Restart patroni service
 
-- name: Enable and start etcd service
+- name: Force all notified handlers to run
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable and start patroni service
   ansible.builtin.systemd_service:
     name: patroni.service
     enabled: true
@@ -24,6 +27,18 @@
     state: started
   ignore_errors: '{{ ansible_check_mode }}'
 
-- name: Force all notified handlers to run
-  ansible.builtin.meta: flush_handlers
+- name: Waiting for host to bootstrap
+  ansible.builtin.command: >-
+    patronictl
+    --config-file /etc/patroni/config.yml
+    list
+    --format json
+  changed_when: false
+  register: _patroni_list
+  until: _patroni_list.stdout | from_json |
+    selectattr("TL", "defined") |
+    selectattr("Member", "eq", inventory_hostname) |
+    length > 0
+  delay: '{{ patroni_wait_delay }}'
+  retries: '{{ patroni_wait_retries }}'
 ...
