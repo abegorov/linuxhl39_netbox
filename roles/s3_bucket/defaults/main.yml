@@ -1,8 +1,8 @@
 ---
 s3_bucket_debug: '{{ debug | default(false) }}'
 
-s3_bucket_access_key: '{{ omit }}'
-s3_bucket_secret_key: '{{ omit }}'
+s3_bucket_access_key:
+s3_bucket_secret_key:
 
 s3_bucket_buckets: {}
 s3_bucket_ceph: true
