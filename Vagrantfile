@@ -89,10 +89,22 @@ GROUPS = {
     :"#{PRJ}-ui-01" => {
       :memory => 2048,
       :intnets => { :"#{PRJ}" => { :ip => '10.130.0.51' }, },
+      :forwarded_ports => [{
+          :id => 'kibana',
+          :guest_ip => '  10.130.0.51', :guest => 8443,
+          :host_ip  =>     '127.0.0.1', :host  => 5601,
+        },
+      ],
     },
     :"#{PRJ}-ui-02" => {
       :memory => 2048,
       :intnets => { :"#{PRJ}" => { :ip => '10.130.0.52' }, },
+      :forwarded_ports => [{
+          :id => 'kibana',
+          :guest_ip => '  10.130.0.52', :guest => 8443,
+          :host_ip  =>     '127.0.0.1', :host  => 5602,
+        },
+      ],
     },
   },
 }
@@ -152,8 +164,8 @@ Vagrant.configure('2') do |config|
           ansible.compatibility_mode = '2.0'
           ansible.raw_arguments = ['--diff']
           # ansible.tags = ['lineinfile']
-          # ansible.tags = ['keepalived']
-          # ansible.tags = ['tls_ca', 'tls_certs', 'haproxy']
+          # ansible.tags = ['kibana']
+          # ansible.tags = ['tls_ca', 'tls_certs', 'kibana']
           # ansible.skip_tags = ['apt_upgrade']
         end
       end
