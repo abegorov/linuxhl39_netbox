@@ -1,0 +1,13 @@
+---
+elasticsearch_debug: '{{ debug | default(false) }}'
+
+elasticsearch_certs: {}
+elasticsearch_config: {}
+elasticsearch_passwords: {}
+
+elasticsearch_url: https://localhost:9200
+elasticsearch_url_ca:
+elasticsearch_url_cert:
+elasticsearch_url_key:
+elasticsearch_url_validate:
+...
