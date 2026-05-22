@@ -96,4 +96,12 @@
     - role: keepalived
       when: not yandex_cloud | default(false)
       tags: [keepalived]
+
+- name: Logs
+  hosts: logs
+  become: true
+  gather_facts: false
+  roles:
+    - role: elasticsearch
+      tags: [elasticsearch]
 ...
