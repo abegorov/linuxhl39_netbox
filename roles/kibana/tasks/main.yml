@@ -1,0 +1,28 @@
+---
+- name: Import certs role
+  ansible.builtin.import_role:
+    name: tls_copy
+    public: false
+  vars:
+    tls_copy_certs: '{{ kibana_certs }}'
+    tls_copy_key_owner: kibana
+    tls_copy_notify: Restart kibana service
+
+- name: Import config role
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ kibana_config }}'
+    config_notify: Restart kibana service
+
+- name: Force all notified handlers to run
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable and start kibana service
+  ansible.builtin.systemd_service:
+    name: kibana.service
+    enabled: true
+    state: started
+  ignore_errors: '{{ ansible_check_mode }}'
+...

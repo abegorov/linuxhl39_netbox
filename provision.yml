@@ -104,4 +104,12 @@
   roles:
     - role: elasticsearch
       tags: [elasticsearch]
+
+- name: UI
+  hosts: ui
+  become: true
+  gather_facts: false
+  roles:
+    - role: kibana
+      tags: [kibana]
 ...

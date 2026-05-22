@@ -1,0 +1,61 @@
+---
+kibana_certs:
+  elasticsearch: /etc/kibana
+  kibana: /etc/kibana
+
+kibana_encryption_key: '{{ lookup("ansible.builtin.password",
+  "secrets/kibana_encryption_key.txt", length=32) }}'
+kibana_reporting_key: '{{ lookup("ansible.builtin.password",
+  "secrets/kibana_reporting_key.txt", length=32) }}'
+kibana_savedobjects_key: '{{ lookup("ansible.builtin.password",
+  "secrets/kibana_savedobjects_key.txt", length=32) }}'
+
+kibana_config:
+  /etc/kibana/node.options:
+    content: |
+      --max-old-space-size=1024
+      --unhandled-rejections=warn
+      --dns-result-order=ipv4first
+  /etc/kibana/kibana.yml:
+    mode: '0400'
+    owner: kibana
+    content: |
+      server.port: 5601
+      server.host: {{ ip_address }}
+      server.name: {{ inventory_hostname }}
+      server.ssl.enabled: true
+      server.ssl.certificate: /etc/kibana/kibana.crt
+      server.ssl.key: /etc/kibana/kibana.key
+      elasticsearch.hosts:
+      {% for host in groups["logs"] %}
+        - https://{{ hostvars[host].ip_address }}:9200
+      {% endfor %}
+      elasticsearch.username: kibana_system
+      elasticsearch.password: '{{ kibana_password }}'
+      elasticsearch.ssl.alwaysPresentCertificate: true
+      elasticsearch.ssl.certificate: /etc/kibana/elasticsearch.crt
+      elasticsearch.ssl.key: /etc/kibana/elasticsearch.key
+      elasticsearch.ssl.certificateAuthorities:
+        - /etc/kibana/elasticsearch-ca.crt
+      elasticsearch.ssl.verificationMode: full
+      logging:
+        appenders:
+          file:
+            type: file
+            fileName: /var/log/kibana/kibana.log
+            layout:
+              type: json
+        root:
+          appenders:
+            - default
+            - file
+      #path.data: data
+      pid.file: /run/kibana/kibana.pid
+      i18n.locale: en
+      xpack.cloudSecurityPosture.enabled: false
+      xpack.fleet.packages: []
+      xpack.security.encryptionKey: {{ kibana_encryption_key }}
+      xpack.encryptedSavedObjects.encryptionKey: >-
+        {{ kibana_savedobjects_key }}
+      xpack.reporting.encryptionKey: {{ kibana_reporting_key }}
+...

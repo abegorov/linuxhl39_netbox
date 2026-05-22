@@ -20,7 +20,7 @@ elasticsearch_url_key: /etc/elasticsearch/certs/elasticsearch.key
 
 elasticsearch_passwords:
   elastic: '{{ elastic_password }}'
-  kibana: '{{ kibana_password }}'
+  kibana_system: '{{ kibana_password }}'
 
 elasticsearch_cipher_suites:
   - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
