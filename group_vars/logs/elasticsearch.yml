@@ -1,0 +1,77 @@
+---
+lineinfile_file_elasticsearch:
+  /root/.bashrc:
+    - regexp: '^export ELASTIC_PASSWORD='
+      line: export ELASTIC_PASSWORD='{{ elastic_password }}'
+    - regexp: '^alias curl-es='
+      line: alias curl-es='curl
+        --cacert {{ elasticsearch_url_ca | ansible.builtin.quote }}
+        --cert {{ elasticsearch_url_cert | ansible.builtin.quote }}
+        --key {{ elasticsearch_url_key | ansible.builtin.quote }}
+        --user "elastic:${ELASTIC_PASSWORD:-}"'
+
+elasticsearch_certs:
+  elasticsearch: /etc/elasticsearch/certs
+  elasticsearch-transport: /etc/elasticsearch/certs
+
+elasticsearch_url_ca: /etc/elasticsearch/certs/elasticsearch-ca.crt
+elasticsearch_url_cert: /etc/elasticsearch/certs/elasticsearch.crt
+elasticsearch_url_key: /etc/elasticsearch/certs/elasticsearch.key
+
+elasticsearch_passwords:
+  elastic: '{{ elastic_password }}'
+  kibana: '{{ kibana_password }}'
+
+elasticsearch_cipher_suites:
+  - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+  - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+
+elasticsearch_config:
+  /etc/elasticsearch/jvm.options.d/heap.options:
+    content: |
+      -Xms1024m
+      -Xmx1024m
+  /etc/elasticsearch/elasticsearch.yml:
+    content: |
+      path.data: /var/lib/elasticsearch
+      path.logs: /var/log/elasticsearch
+      xpack.security.enabled: true
+      xpack.security.autoconfiguration.enabled: false
+      xpack.security.enrollment.enabled: false
+      xpack.security.http.ssl:
+        enabled: true
+        key: {{ elasticsearch_url_key }}
+        certificate: {{ elasticsearch_url_cert }}
+        certificate_authorities: {{ elasticsearch_url_ca }}
+        cipher_suites: '{{ elasticsearch_cipher_suites | join(",") }}'
+        supported_protocols: TLSv1.3,TLSv1.2
+        client_authentication: required
+        verification_mode: full
+      xpack.security.transport.ssl:
+        enabled: true
+        key: /etc/elasticsearch/certs/elasticsearch-transport.key
+        certificate: /etc/elasticsearch/certs/elasticsearch-transport.crt
+        certificate_authorities: >-
+          /etc/elasticsearch/certs/elasticsearch-transport-ca.crt
+        cipher_suites: '{{ elasticsearch_cipher_suites | join(",") }}'
+        supported_protocols: TLSv1.3,TLSv1.2
+        client_authentication: required
+        verification_mode: certificate
+      network.host: {{ ip_address }}
+      http.host:
+        - _local_
+        - {{ ip_address }}
+      transport.host: {{ ip_address }}
+      cluster.name: netbox
+      node.name: {{ inventory_hostname }}
+      discovery.seed_hosts:
+      {% for host in groups["logs"] %}
+        - {{ hostvars[host].ip_address }}
+      {% endfor %}
+      cluster.initial_master_nodes:
+      {% for host in groups["logs"] %}
+        - {{ hostvars[host].ip_address }}
+      {% endfor %}
+...

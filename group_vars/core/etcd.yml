@@ -21,12 +21,9 @@ lineinfile_file_etcdctl:
     - regexp: '^export ETCDCTL_KEY='
       line: export ETCDCTL_KEY=/etc/etcd/etcd.key
     - regexp: '^export ETCDCTL_ENDPOINTS='
-      line: >-
-        export ETCDCTL_ENDPOINTS=
-        {%- for host in groups['core'] -%}
-        https://{{ hostvars[host].ip_address }}:2379
-        {{- ',' if not loop.last else '' -}}
-        {%- endfor -%}
+      line: export ETCDCTL_ENDPOINTS={% for host in groups['core']
+        %}https://{{ hostvars[host].ip_address }}:2379{{
+        ',' if not loop.last else '' }}{% endfor %}
 
 etcd_certs:
   etcd: /etc/etcd
@@ -61,14 +58,12 @@ etcd_config:
       raft-read-timeout: 5s
       raft-write-timeout: 5s
       initial-advertise-peer-urls: https://{{ ip_address }}:2380
-      initial-cluster: {{ '' }}
-        {%- for host in groups['core'] -%}
-        {{ host }}=https://{{ hostvars[host].ip_address }}:2380
-        {{- ',' if not loop.last else '' }}
-        {%- endfor -%}
-        {{ '' }}
+      initial-cluster: {% for host in groups['core'] %}{{ host
+        }}=https://{{ hostvars[host].ip_address }}:2380{{
+        ',' if not loop.last else '' }}{% endfor %}
       initial-cluster-state: new
-      initial-cluster-token: {{ ",".join(groups['core']) | ansible.builtin.sha1 }}
+      initial-cluster-token: {{ ",".join(groups['core']) |
+        ansible.builtin.sha1 }}
       advertise-client-urls: https://{{ ip_address }}:2379
       strict-reconfig-check: false
       pre-vote: true

@@ -1,4 +1,5 @@
 ---
 tls_certs_certs:
   elasticsearch:
+  elasticsearch-transport:
 ...

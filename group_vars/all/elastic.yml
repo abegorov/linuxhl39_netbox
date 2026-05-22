@@ -1,0 +1,6 @@
+---
+elastic_password: '{{ lookup("ansible.builtin.password",
+  "secrets/elastic_password.txt", length=26) }}'
+kibana_password: '{{ lookup("ansible.builtin.password",
+  "secrets/kibana_password.txt", length=26) }}'
+...

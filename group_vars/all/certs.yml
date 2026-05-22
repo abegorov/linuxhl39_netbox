@@ -4,6 +4,7 @@ tls_ca_certs:
   etcd:
   etcd-peer:
   elasticsearch:
+  elasticsearch-transport:
   patroni:
   postgresql:
   redis:
