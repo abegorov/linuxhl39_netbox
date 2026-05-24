@@ -33,8 +33,7 @@
       default(omit, true) }}'
     mode: '{{ item.value.mode | default(unarchive_mode) |
       default(omit, true) }}'
-  notify: '{{ item.value.notify | default(unarchive_notify) |
-    default(omit, true) }}'
+  notify: '{{ unarchive_notify }}'
   loop: '{{ unarchive_urls | ansible.builtin.dict2items }}'
   loop_control:
     label: '{{ item.key }}'

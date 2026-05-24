@@ -316,7 +316,6 @@ netbox_config:
       [Install]
       WantedBy=multi-user.target
   /etc/systemd/system/netbox-housekeeping.service:
-    notify: []
     content: |
       [Unit]
       Description=NetBox Housekeeping Service

@@ -4,6 +4,7 @@ elasticsearch_debug: '{{ debug | default(false) }}'
 elasticsearch_certs: {}
 elasticsearch_config: {}
 elasticsearch_passwords: {}
+elasticsearch_static_config: {}
 
 elasticsearch_url: https://localhost:9200
 elasticsearch_url_ca:

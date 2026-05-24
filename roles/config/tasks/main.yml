@@ -11,8 +11,7 @@
     mode: '{{ item.value.mode | default(config_mode) |
       default(omit, true) }}'
     validate: '{{ item.value.validate | default(omit) }}'
-  notify: '{{ item.value.notify | default(config_notify) |
-    default(omit, true) }}'
+  notify: '{{ config_notify }}'
   loop: '{{ config_content | ansible.builtin.dict2items }}'
   loop_control:
     label: '{{ item.key }}'

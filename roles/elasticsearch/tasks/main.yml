@@ -8,13 +8,20 @@
     tls_copy_key_owner: elasticsearch
     tls_copy_notify: Restart elasticsearch service
 
-- name: Import config role
+- name: Import config role for main config
   ansible.builtin.import_role:
     name: config
     public: false
   vars:
     config_content: '{{ elasticsearch_config }}'
     config_notify: Restart elasticsearch service
+
+- name: Import config role for static config
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ elasticsearch_static_config }}'
 
 - name: Enable and start elasticsearch service
   ansible.builtin.systemd_service:
