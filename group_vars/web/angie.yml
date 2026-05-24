@@ -1,5 +1,5 @@
 ---
-file_group_angie:
+angie_file_groups:
   - paths: [/etc/angie/certs]
     state: directory
     owner: root
@@ -148,7 +148,7 @@ angie_config:
             '"upstream_response_time":"$upstream_response_time"'
           '}';
 
-          access_log  /var/log/angie/access.log  json_extended;
+          access_log  /var/log/angie/access.log  main;
 
           sendfile    on;
           tcp_nopush  on;
