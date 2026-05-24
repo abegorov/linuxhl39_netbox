@@ -10,6 +10,23 @@ kibana_reporting_key: '{{ lookup("ansible.builtin.password",
 kibana_savedobjects_key: '{{ lookup("ansible.builtin.password",
   "secrets/kibana_savedobjects_key.txt", length=32) }}'
 
+kibana_dataview_url: https://{{ ip_address }}:5601
+kibana_dataview_username: elastic
+kibana_dataview_password: '{{ elastic_password }}'
+kibana_dataview_ca_path: /etc/kibana/kibana-ca.crt
+kibana_dataview_validate_certs: true
+kibana_dataview_create:
+  angie.access: filebeat-nginx.access*
+  angie.error: filebeat-nginx.error*
+  ceph: filebeat-ceph*
+  elasticsearch: filebeat-elasticsearch*
+  haproxy: filebeat-haproxy*
+  kibana: filebeat-kibana*
+  postgresql: filebeat-postgresql*
+  redis: filebeat-redis*
+  system.auth: filebeat-system.auth*
+  system.syslog: filebeat-system.syslog*
+
 kibana_config:
   /etc/kibana/node.options:
     content: |

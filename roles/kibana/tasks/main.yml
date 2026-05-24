@@ -25,4 +25,7 @@
     enabled: true
     state: started
   ignore_errors: '{{ ansible_check_mode }}'
+
+- name: Import dataview tasks
+  ansible.builtin.import_tasks: dataview.yml
 ...

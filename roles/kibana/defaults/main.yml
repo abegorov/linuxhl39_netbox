@@ -1,4 +1,16 @@
 ---
+kibana_debug: '{{ debug | default(false) }}'
+
 kibana_certs: {}
 kibana_config: {}
+
+kibana_dataview_url: https://localhost:5601
+kibana_dataview_username:
+kibana_dataview_password:
+kibana_dataview_ca_path:
+kibana_dataview_validate_certs:
+kibana_dataview_create: {}
+
+kibana_dataview_delay: 10
+kibana_dataview_retries: 30
 ...

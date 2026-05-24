@@ -1,0 +1,48 @@
+---
+- name: Wait for Kibana to be ready
+  ansible.builtin.uri:
+    url: '{{ kibana_dataview_url }}/api/status'
+    url_username: '{{ kibana_dataview_username | default(omit, true) }}'
+    url_password: '{{ kibana_dataview_password | default(omit, true) }}'
+    force_basic_auth: true
+    ca_path: '{{ kibana_dataview_ca_path | default(omit, true) }}'
+    validate_certs: '{{ kibana_dataview_validate_certs |
+      default(omit, true) }}'
+    status_code: 200
+  delay: '{{ kibana_dataview_delay }}'
+  no_log: '{{ not kibana_debug }}'
+  register: _kibana_status
+  retries: '{{ kibana_dataview_retries }}'
+  until: _kibana_status.status == 200
+
+- name: Update kibana dataviews
+  ansible.builtin.uri:
+    url: '{{ kibana_dataview_url }}/api/data_views/data_view'
+    url_username: '{{ kibana_dataview_username | default(omit, true) }}'
+    url_password: '{{ kibana_dataview_password | default(omit, true) }}'
+    force_basic_auth: true
+    ca_path: '{{ kibana_dataview_ca_path | default(omit, true) }}'
+    validate_certs: '{{ kibana_dataview_validate_certs |
+      default(omit, true) }}'
+    headers:
+      kbn-xsrf: string
+    method: POST
+    body_format: json
+    body:
+      data_view:
+        name: '{{ item.key }}'
+        title: '{{ item.value }}'
+        allowNoIndex: true
+      override: false
+  changed_when: _kibana_dataview_creation.status in [200, 201]
+  failed_when:
+    - _kibana_dataview_creation.status not in [200, 201]
+    - "'Duplicate' not in
+      _kibana_dataview_creation.json.message | default([])"
+  loop: '{{ kibana_dataview_create | ansible.builtin.dict2items }}'
+  loop_control:
+    label: '{{ item.key }}'
+  no_log: '{{ not kibana_debug }}'
+  register: _kibana_dataview_creation
+  throttle: 1
+...
