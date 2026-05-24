@@ -1,5 +1,22 @@
 ---
-file_group_netbox:
+user_add_netbox:
+  netbox:
+    create_home: true
+    home: /var/lib/netbox
+    skeleton: /dev/null
+
+netbox_unarchive:
+  netbox.tar.gz:
+    checksum: >-
+      sha256:2060854d7a188d02bebdf9c437dfa3706b73b5e92966f467d96b877183d236d9
+    creates: /opt/netbox-{{ netbox_version }}/upgrade.sh
+    dest: /opt/
+    extra_opts: []
+    mode: null
+    url: https://github.com/netbox-community/netbox/archive/refs/tags/v{{
+      netbox_version }}.tar.gz
+
+netbox_file_groups:
   - paths: [/etc/netbox]
     state: directory
     owner: root
@@ -14,12 +31,6 @@ file_group_netbox:
     follow: false
     force: true
     state: link
-
-user_add_netbox:
-  netbox:
-    create_home: true
-    home: /var/lib/netbox
-    skeleton: /dev/null
 
 netbox_s3_access_key: '{{ netbox_s3_userinfo["keys"][0].access_key }}'
 netbox_s3_secret_key: '{{ netbox_s3_userinfo["keys"][0].secret_key }}'
@@ -45,6 +56,7 @@ netbox_config:
     content: |
       boto3
       django-storages
+netbox_config_service:
   /etc/netbox/gunicorn.py:
     content: |
       workers = 5
@@ -188,21 +200,6 @@ netbox_config:
       # Force sorl-thumbnail to share NetBox's default S3 storage system
       THUMBNAIL_STORAGE = "django.core.files.storage.storages.default"
       images.get_or_create_storage = lambda *args: storages["default"]
-  /etc/systemd/system/netbox.socket:
-    notify: Restart netbox socket
-    content: |
-      [Unit]
-      Description=NetBox WSGI Socket
-      Documentation=https://docs.netbox.dev/
-
-      [Socket]
-      ListenStream=/var/run/netbox.sock
-      SocketUser=angie
-      SocketGroup=angie
-      SocketMode=0660
-
-      [Install]
-      WantedBy=sockets.target
   /etc/systemd/system/netbox.service:
     content: |
       [Unit]
@@ -262,8 +259,23 @@ netbox_config:
 
       [Install]
       WantedBy=multi-user.target
+netbox_config_socket:
+  /etc/systemd/system/netbox.socket:
+    content: |
+      [Unit]
+      Description=NetBox WSGI Socket
+      Documentation=https://docs.netbox.dev/
+
+      [Socket]
+      ListenStream=/var/run/netbox.sock
+      SocketUser=angie
+      SocketGroup=angie
+      SocketMode=0660
+
+      [Install]
+      WantedBy=sockets.target
+netbox_config_rq:
   /etc/systemd/system/netbox-rq.service:
-    notify: Restart netbox-rq service
     content: |
       [Unit]
       Description=NetBox Request Queue Worker
@@ -315,6 +327,7 @@ netbox_config:
 
       [Install]
       WantedBy=multi-user.target
+netbox_config_housekeeping:
   /etc/systemd/system/netbox-housekeeping.service:
     content: |
       [Unit]
@@ -365,7 +378,6 @@ netbox_config:
       [Install]
       WantedBy=multi-user.target
   /etc/systemd/system/netbox-housekeeping.timer:
-    notify: Restart netbox-housekeeping timer
     content: |
       [Unit]
       Description=NetBox Housekeeping Timer

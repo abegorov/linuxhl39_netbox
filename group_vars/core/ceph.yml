@@ -8,7 +8,7 @@ user_add_ceph:
     shell: /bin/bash
     system: false
 
-config_content_ceph:
+ceph_config_bootstrap:
   /etc/sudoers.d/ceph-admin:
     content: |
       ceph-admin ALL=(ALL) NOPASSWD:ALL
@@ -22,12 +22,12 @@ ceph_rgw_cert_path: ./secrets/ceph-rgw/{{ inventory_hostname }}.crt
 ceph_rgw_key: '{{ lookup("ansible.builtin.file", ceph_rgw_key_path) }}'
 ceph_rgw_key_path: ./secrets/ceph-rgw/{{ inventory_hostname }}.key
 
-radosgw_admin_users:
-  netbox: --display-name=netbox
-
 ceph_config_sections:
   mgr:
     mgr/dashboard/RGW_API_SSL_VERIFY: 'false'
+
+radosgw_admin_users:
+  netbox: --display-name=netbox
 
 ceph_config:
   /etc/ceph/cluster-spec.yml:

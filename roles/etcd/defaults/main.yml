@@ -1,4 +1,6 @@
 ---
 etcd_certs: {}
 etcd_config: {}
+etcd_file_groups: []
+etcd_unarchive: {}
 ...

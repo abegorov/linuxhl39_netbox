@@ -21,15 +21,4 @@ apt_packages_add_override:
   - libpq-dev
   - libssl-dev
   - zlib1g-dev
-
-unarchive_urls_override:
-  netbox.tar.gz:
-    checksum: >-
-      sha256:2060854d7a188d02bebdf9c437dfa3706b73b5e92966f467d96b877183d236d9
-    creates: /opt/netbox-{{ netbox_version }}/upgrade.sh
-    dest: /opt/
-    extra_opts: []
-    mode: null
-    url: https://github.com/netbox-community/netbox/archive/refs/tags/v{{
-      netbox_version }}.tar.gz
 ...

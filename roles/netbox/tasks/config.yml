@@ -1,11 +1,42 @@
 ---
-- name: Import config role
+- name: Import general config role
   ansible.builtin.import_role:
     name: config
     public: false
   vars:
     config_content: '{{ netbox_config }}'
+
+- name: Import config role for netbox service
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ netbox_config_service }}'
     config_notify: Restart netbox service
+
+- name: Import config role for netbox socket
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ netbox_config_socket }}'
+    config_notify: Restart netbox socket
+
+- name: Import config role for netbox-rq service
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ netbox_config_rq }}'
+    config_notify: Restart netbox-rq service
+
+- name: Import config role for netbox-housekeeping timer
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ netbox_config_housekeeping }}'
+    config_notify: Restart netbox-housekeeping timer
 
 - name: Create NetBox virtual environment
   ansible.builtin.command:

@@ -1,4 +1,11 @@
 ---
+- name: Import config bootstrap role
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ ceph_config_bootstrap }}'
+
 - name: Bootstrap ceph cluster
   ansible.builtin.command: >-
     cephadm bootstrap

@@ -4,6 +4,7 @@ ceph_bootstrap_mon_ip: '{{ ip_address }}'
 ceph_bootstrap_args: --dashboard-password-noupdate --skip-monitoring-stack
 
 ceph_config: {}
+ceph_config_bootstrap: {}
 ceph_config_sections: {}
 
 ceph_ssh_user: ceph-admin

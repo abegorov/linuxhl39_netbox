@@ -1,17 +1,4 @@
 ---
-user_add_etcd:
-  etcd:
-
-file_group_etcd:
-  - paths: [/etc/etcd]
-    state: directory
-file_group_etcd_data:
-  - paths: [/var/lib/etcd]
-    owner: etcd
-    group: etcd
-    mode: '0700'
-    state: directory
-
 lineinfile_file_etcdctl:
   /root/.bashrc:
     - regexp: '^export ETCDCTL_CACERT='
@@ -24,6 +11,26 @@ lineinfile_file_etcdctl:
       line: export ETCDCTL_ENDPOINTS={% for host in groups['core']
         %}https://{{ hostvars[host].ip_address }}:2379{{
         ',' if not loop.last else '' }}{% endfor %}
+
+user_add_etcd:
+  etcd:
+
+etcd_file_groups:
+  - paths: [/etc/etcd]
+    state: directory
+  - paths: [/var/lib/etcd]
+    owner: etcd
+    group: etcd
+    mode: '0700'
+    state: directory
+
+etcd_unarchive:
+  etcd.tar.gz:
+    checksum: >-
+      sha256:8756f7a4eaf921668a83de0bf13c0f65cae9186a165696e3ae8396afe6f557ed
+    include: ['*/etcd', '*/etcdctl', '*/etcdutl']
+    url: "https://mirror.yandex.ru/mirrors/github/etcd-io/etcd/\
+      v3.6.11/etcd-v3.6.11-linux-amd64.tar.gz"
 
 etcd_certs:
   etcd: /etc/etcd

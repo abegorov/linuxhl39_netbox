@@ -9,12 +9,4 @@ apt_packages_add_override:
   - lvm2
   - redis-sentinel
   - redis-server
-
-unarchive_urls_override:
-  etcd.tar.gz:
-    checksum: >-
-      sha256:8756f7a4eaf921668a83de0bf13c0f65cae9186a165696e3ae8396afe6f557ed
-    include: ['*/etcd', '*/etcdctl', '*/etcdutl']
-    url: "https://mirror.yandex.ru/mirrors/github/etcd-io/etcd/\
-      v3.6.11/etcd-v3.6.11-linux-amd64.tar.gz"
 ...

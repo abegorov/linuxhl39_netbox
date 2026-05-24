@@ -1,6 +1,12 @@
 ---
 netbox_config: {}
+netbox_config_service: {}
+netbox_config_socket: {}
+netbox_config_rq: {}
+netbox_config_housekeeping: {}
 netbox_dir: /opt/netbox
+netbox_file_groups: []
+netbox_unarchive: {}
 
 netbox_superuser: admin
 netbox_superuser_email: root@localhost

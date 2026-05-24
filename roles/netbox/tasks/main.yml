@@ -1,4 +1,19 @@
 ---
+- name: Import unarchive role
+  ansible.builtin.import_role:
+    name: unarchive
+    public: false
+  vars:
+    unarchive_urls: '{{ netbox_unarchive }}'
+    unarchive_notify: Restart netbox service
+
+- name: Import file role
+  ansible.builtin.import_role:
+    name: file
+    public: false
+  vars:
+    file_groups: '{{ netbox_file_groups }}'
+
 - name: Import config tasks
   ansible.builtin.import_tasks: config.yml
 
