@@ -17,6 +17,7 @@
   run_once: true
   community.crypto.openssl_privatekey:
     path: '{{ tls_ca_key_path }}'
+  diff: false
   loop: '{{ tls_ca_certs.keys() }}'
   loop_control:
     loop_var: ca_name
@@ -64,6 +65,7 @@
       default(tls_ca_not_after) }}'
     selfsigned_not_before: '{{ item.value.item.not_before |
       default(tls_ca_not_before) }}'
+  diff: false
   loop: '{{ _tls_ca_csrs.results }}'
   loop_control:
     label: '{{ ca_name }}'

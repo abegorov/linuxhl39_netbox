@@ -7,10 +7,11 @@
     owner: '{{ tls_copy_cert_owner }}'
     group: '{{ tls_copy_cert_group }}'
     mode: '{{ tls_copy_cert_mode }}'
-  no_log: '{{ not tls_copy_debug }}'
+  diff: false
   loop: '{{ tls_copy_certs | ansible.builtin.dict2items }}'
   loop_control:
     label: '{{ item.key }}'
+  no_log: '{{ not tls_copy_debug }}'
   notify: '{{ tls_copy_notify }}'
 
 - name: Update certificates
@@ -30,12 +31,14 @@
       else tls_copy_cert_group }}'
     mode: '{{ tls_copy_key_mode if tls_copy_key_chain
       else tls_copy_cert_mode }}'
-  no_log: '{{ not tls_copy_debug }}'
+  diff: false
   loop: '{{ tls_copy_certs | ansible.builtin.dict2items }}'
   loop_control:
     label: '{{ item.key }}'
-  when: tls_copy_cert_src is exists
+  no_log: '{{ not tls_copy_debug }}'
   notify: '{{ tls_copy_notify }}'
+  when: tls_copy_cert_src is exists
+
 
 - name: Update keys
   community.crypto.openssl_privatekey_convert:
@@ -46,11 +49,12 @@
     group: '{{ tls_copy_key_group }}'
     mode: '{{ tls_copy_key_mode }}'
   no_log: '{{ not tls_copy_debug }}'
+  diff: false
   loop: '{{ tls_copy_certs | ansible.builtin.dict2items }}'
   loop_control:
     label: '{{ item.key }}'
+  notify: '{{ tls_copy_notify }}'
   when:
     - tls_copy_key_src is exists
     - not tls_copy_key_chain
-  notify: '{{ tls_copy_notify }}'
 ...

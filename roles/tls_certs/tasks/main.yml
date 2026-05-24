@@ -4,6 +4,7 @@
   delegate_to: localhost
   community.crypto.openssl_privatekey:
     path: '{{ tls_certs_key_path }}'
+  diff: false
   loop: '{{ tls_certs_certs.keys() }}'
   loop_control:
     loop_var: ca_name
@@ -53,6 +54,7 @@
     path: '{{ tls_certs_cert_path }}'
     privatekey_path: '{{ item.privatekey }}'
     provider: ownca
+  diff: false
   loop: '{{ _tls_certs_csrs.results }}'
   loop_control:
     label: '{{ ca_name }}'
