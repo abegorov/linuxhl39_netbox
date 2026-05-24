@@ -1,0 +1,60 @@
+---
+filebeat_config:
+  /etc/filebeat/filebeat.yml:
+    mode: '0400'
+    content: |
+      filebeat.inputs:
+        - type: filestream
+          enabled: true
+          paths:
+            - /var/log/ceph/*.log
+            - /var/log/ceph/**/*.log
+          id: ceph-filestream
+          index: filebeat-ceph-default
+      filebeat.modules:
+        - module: system
+          syslog.enabled: true
+          syslog.var.use_journald: true
+          auth.enabled: true
+          auth.var.use_journald: true
+        - module: redis
+          log.enabled: true
+          log.var.paths: [/var/log/redis/*]
+      setup:
+        template.name: filebeat-default
+        template.pattern: filebeat-*
+        template.overwrite: true
+        template.settings:
+          index.number_of_replicas: 1
+          index.number_of_shards: 3
+      setup.template.append_fields:
+        - name: message_json
+          type: flattened
+      output.elasticsearch:
+        hosts:
+      {% for host in groups["logs"] %}
+        - {{ hostvars[host].ip_address }}:9200
+      {% endfor %}
+        protocol: https
+        username: filebeat
+        password: {{ filebeat_password }}
+        preset: balanced
+        index: filebeat-generic-default
+        indices:
+          - index: filebeat-%{[event.dataset]}-default
+            when.has_fields: [event.dataset]
+        ssl.certificate_authorities:
+          - /etc/filebeat/elasticsearch-ca.crt
+        ssl.certificate: /etc/filebeat/elasticsearch.crt
+        ssl.key: /etc/filebeat/elasticsearch.key
+      processors:
+        - add_host_metadata:
+            when.not.contains.tags: forwarded
+        - add_cloud_metadata: ~
+        - add_docker_metadata: ~
+        - add_kubernetes_metadata: ~
+        - decode_json_fields:
+            fields: [message]
+            max_depth: 3
+            target: message_json
+...

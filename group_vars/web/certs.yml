@@ -1,5 +1,6 @@
 ---
 tls_certs_certs:
+  elasticsearch:
   patroni:
   postgresql:
   redis:

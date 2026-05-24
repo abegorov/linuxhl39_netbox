@@ -1,0 +1,4 @@
+---
+filebeat_certs:
+  elasticsearch: /etc/filebeat
+...

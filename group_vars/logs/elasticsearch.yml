@@ -28,6 +28,32 @@ elasticsearch_cipher_suites:
   - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
   - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 
+elasticsearch_static_config:
+  /etc/elasticsearch/roles.yml:
+    content: |
+      filebeat:
+        cluster:
+          - manage_index_templates
+          - manage_ingest_pipelines
+          - manage_ilm
+          - monitor
+        indices:
+          - names:
+              - filebeat-*
+            privileges:
+              - auto_configure
+              - create_doc
+              - create_index
+              - view_index_metadata
+  /etc/elasticsearch/users:
+    owner: elasticsearch
+    mode: '0400'
+    content: |
+      filebeat:{{ filebeat_password_encrypted }}
+  /etc/elasticsearch/users_roles:
+    content: |
+      filebeat:filebeat
+
 elasticsearch_config:
   /etc/elasticsearch/jvm.options.d/heap.options:
     content: |

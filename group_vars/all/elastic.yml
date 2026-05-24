@@ -3,4 +3,9 @@ elastic_password: '{{ lookup("ansible.builtin.password",
   "secrets/elastic_password.txt", length=26) }}'
 kibana_password: '{{ lookup("ansible.builtin.password",
   "secrets/kibana_password.txt", length=26) }}'
+filebeat_password: '{{ lookup("ansible.builtin.password",
+  filebeat_password_file, length=26) }}'
+filebeat_password_encrypted: '{{ lookup("ansible.builtin.password",
+  filebeat_password_file, length=26, encrypt="bcrypt", ident="2a") }}'
+filebeat_password_file: secrets/filebeat_password.txt
 ...

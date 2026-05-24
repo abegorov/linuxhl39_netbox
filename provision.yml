@@ -43,6 +43,22 @@
     - role: config
       tags: [config]
 
+- name: Logs
+  hosts: logs
+  become: true
+  gather_facts: false
+  roles:
+    - role: elasticsearch
+      tags: [elasticsearch]
+
+- name: Monitoring
+  hosts: all
+  become: true
+  gather_facts: false
+  roles:
+    - role: filebeat
+      tags: [filebeat]
+
 - name: Core
   hosts: core
   become: true
@@ -96,14 +112,6 @@
     - role: keepalived
       when: not yandex_cloud | default(false)
       tags: [keepalived]
-
-- name: Logs
-  hosts: logs
-  become: true
-  gather_facts: false
-  roles:
-    - role: elasticsearch
-      tags: [elasticsearch]
 
 - name: UI
   hosts: ui

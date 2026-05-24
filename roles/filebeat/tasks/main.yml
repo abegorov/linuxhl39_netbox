@@ -1,0 +1,27 @@
+---
+- name: Import certs role
+  ansible.builtin.import_role:
+    name: tls_copy
+    public: false
+  vars:
+    tls_copy_certs: '{{ filebeat_certs }}'
+    tls_copy_notify: Restart filebeat service
+
+- name: Import config role
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ filebeat_config }}'
+    config_notify: Restart filebeat service
+
+- name: Force all notified handlers to run
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable and start filebeat service
+  ansible.builtin.systemd_service:
+    name: filebeat.service
+    enabled: true
+    state: started
+  ignore_errors: '{{ ansible_check_mode }}'
+...

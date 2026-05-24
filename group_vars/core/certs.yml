@@ -1,6 +1,7 @@
 ---
 tls_certs_certs:
   ceph-rgw:
+  elasticsearch:
   etcd:
   etcd-peer:
   redis:

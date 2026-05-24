@@ -148,7 +148,7 @@ angie_config:
             '"upstream_response_time":"$upstream_response_time"'
           '}';
 
-          access_log  /var/log/angie/access.log  main;
+          access_log  /var/log/angie/access.log  json_extended;
 
           sendfile    on;
           tcp_nopush  on;
