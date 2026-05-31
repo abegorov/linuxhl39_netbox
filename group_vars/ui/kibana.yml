@@ -67,6 +67,7 @@ kibana_config:
             - default
             - file
       #path.data: data
+      migrations.discardCorruptObjects: 9.4.2
       pid.file: /run/kibana/kibana.pid
       i18n.locale: en
       xpack.cloudSecurityPosture.enabled: false
