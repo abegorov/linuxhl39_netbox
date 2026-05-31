@@ -1,6 +1,7 @@
 ---
 apt_packages_add_override:
   - elasticsearch
+  - haproxy
 
 unarchive_urls_override:
   alertmanager.tar.gz:

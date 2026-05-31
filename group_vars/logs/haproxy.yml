@@ -1,11 +1,7 @@
 ---
 haproxy_certs:
-  ceph-rgw: /etc/haproxy
-  patroni: /etc/haproxy
-  redis: /etc/haproxy
-
-haproxy_stats_password: '{{ lookup("ansible.builtin.password",
-  "secrets/haproxy_stats_password.txt", length=26, encrypt="sha512_crypt") }}'
+  victoriametrics: /etc/haproxy
+  vmstorage: /etc/haproxy
 
 # yamllint disable rule:line-length
 haproxy_config:
@@ -52,7 +48,7 @@ haproxy_config:
         maxconn 400
       defaults
         log     global
-        mode    tcp
+        mode    http
         retries 2
         timeout connect 4s
         timeout client  30m
@@ -67,55 +63,52 @@ haproxy_config:
         errorfile 504 /etc/haproxy/errors/504.http
       userlist stats
         user stats password {{ haproxy_stats_password }}
+      userlist victoriametrics
+        user victoria password {{ haproxy_victoria_password }}
       listen stats
-        mode http
         bind 127.0.0.1:7000
         bind [::1]:7000
         http-request auth unless { http_auth(stats) }
         stats enable
         stats uri /
-      listen primary
-        bind 127.0.0.1:5432
-        bind [::1]:5432
-        default-server inter 100 fall 3 rise 2 on-marked-down shutdown-sessions
-      {% for server in groups['db'] %}
-        server {{ server }} {{ hostvars[server].ip_address }}:5432 track patroni/{{ server }}
-      {% endfor %}
-      backend patroni
-        mode http
-        option httpchk
-        http-check send meth OPTIONS uri /primary
-        http-check expect status 200
-        default-server inter 100 fall 3 rise 2 on-marked-down shutdown-sessions check ssl verify required ca-file "patroni-ca.crt" crt "patroni.crt"
-      {% for server in groups['db'] %}
-        server {{ server }} {{ hostvars[server].ip_address }}:8008
-      {% endfor %}
-      listen redis
-        bind 127.0.0.1:6379
-        bind [::1]:6379
-        option clitcpka
-        option tcp-check
-        default-server inter 100 fall 3 rise 2 on-marked-down shutdown-sessions check ssl verify required ca-file "redis-ca.crt" crt "redis.crt"
-        tcp-check connect ssl
-        tcp-check send AUTH\ {{ redis_password }}\r\n
-        tcp-check expect string +OK
-        tcp-check send info\ replication\r\n
-        tcp-check expect string role:master
-        tcp-check send QUIT\r\n
-        tcp-check expect string +OK
-      {% for server in groups['db'] %}
-        server {{ server }} {{ hostvars[server].ip_address }}:6379
-      {% endfor %}
-      listen rados-gateway
-        bind 127.0.0.1:8000
-        bind [::1]:8000
-        mode http
-        balance roundrobin
-        option httpchk
-        http-check send meth GET uri /
-        http-check expect status 200
-        default-server inter 100 fall 3 rise 2 on-marked-down shutdown-sessions check ssl verify required ca-file "ceph-rgw-ca.crt"
-      {% for server in groups['core'] %}
-        server {{ server }} {{ hostvars[server].ip_address }}:443
+      listen vmagent_ingress
+        bind {{ ip_address }}:8429 ssl crt "victoriametrics.crt"
+        http-request auth unless { http_auth(victoria) }
+        server localhost 127.0.0.1:8429
+      listen vmalert_ingress
+        bind {{ ip_address }}:8483 ssl crt "victoriametrics.crt"
+        http-request auth unless { http_auth(victoria) }
+        server localhost 127.0.0.1:8483
+      listen vminsert_ingress
+        bind {{ ip_address }}:8480 ssl crt "victoriametrics.crt"
+        http-request auth unless { http_auth(victoria) }
+        server localhost 127.0.0.1:8480
+      listen vmselect_ingress
+        bind {{ ip_address }}:8481 ssl crt "victoriametrics.crt"
+        http-request auth unless { http_auth(victoria) }
+        server localhost 127.0.0.1:8481
+      listen vmstorage_ingress
+        bind {{ ip_address }}:8482 ssl crt "victoriametrics.crt"
+        http-request auth unless { http_auth(victoria) }
+        server localhost 127.0.0.1:8482
+      listen vmstorage_insert_ingress
+        bind {{ ip_address }}:8400 ssl verify required ca-file "vmstorage-ca.crt" crt "vmstorage.crt"
+        server localhost 127.0.0.1:8400
+      listen vmstorage_select_ingress
+        bind {{ ip_address }}:8401 ssl verify required ca-file "vmstorage-ca.crt" crt "vmstorage.crt"
+        server localhost 127.0.0.1:8401
+      {% for server in groups['logs'] %}
+      listen vmselect_egress{{ loop.index }}
+        bind 127.84.81.{{ loop.index }}:8481
+        http-request set-header Authorization "Basic {{
+          'victoria:' + haproxy_victoria_password) | ansible.builtin.b64encode
+        }}"
+        server {{ server }} {{ hostvars[server].ip_address }}:8481 ssl verify required ca-file "victoriametrics-ca.crt" crt "victoriametrics.crt"
+      listen vmstorage_insert_egress{{ loop.index }}
+        bind 127.84.0.{{ loop.index }}:8400
+        server {{ server }} ssl verify required ca-file "vmstorage-ca.crt" crt "vmstorage.crt"
+      listen vmstorage_select_egress{{ loop.index }}
+        bind 127.84.1.{{ loop.index }}:8401
+        server {{ server }} ssl verify required ca-file "vmstorage-ca.crt" crt "vmstorage.crt"
       {% endfor %}
 ...
