@@ -73,42 +73,47 @@ haproxy_config:
         stats uri /
       listen vmagent_ingress
         bind {{ ip_address }}:8429 ssl crt "victoriametrics.crt"
-        http-request auth unless { http_auth(victoria) }
+        http-request auth unless { http_auth(victoriametrics) }
         server localhost 127.0.0.1:8429
       listen vmalert_ingress
         bind {{ ip_address }}:8483 ssl crt "victoriametrics.crt"
-        http-request auth unless { http_auth(victoria) }
+        http-request auth unless { http_auth(victoriametrics) }
         server localhost 127.0.0.1:8483
       listen vminsert_ingress
         bind {{ ip_address }}:8480 ssl crt "victoriametrics.crt"
-        http-request auth unless { http_auth(victoria) }
+        http-request auth unless { http_auth(victoriametrics) }
         server localhost 127.0.0.1:8480
       listen vmselect_ingress
         bind {{ ip_address }}:8481 ssl crt "victoriametrics.crt"
-        http-request auth unless { http_auth(victoria) }
+        http-request auth unless { http_auth(victoriametrics) }
         server localhost 127.0.0.1:8481
       listen vmstorage_ingress
         bind {{ ip_address }}:8482 ssl crt "victoriametrics.crt"
-        http-request auth unless { http_auth(victoria) }
+        http-request auth unless { http_auth(victoriametrics) }
         server localhost 127.0.0.1:8482
       listen vmstorage_insert_ingress
-        bind {{ ip_address }}:8400 ssl verify required ca-file "vmstorage-ca.crt" crt "vmstorage.crt"
+        bind {{ ip_address
+        }}:8400 ssl verify required ca-file "vmstorage-ca.crt" crt "vmstorage.crt"
         server localhost 127.0.0.1:8400
       listen vmstorage_select_ingress
-        bind {{ ip_address }}:8401 ssl verify required ca-file "vmstorage-ca.crt" crt "vmstorage.crt"
+        bind {{ ip_address
+        }}:8401 ssl verify required ca-file "vmstorage-ca.crt" crt "vmstorage.crt"
         server localhost 127.0.0.1:8401
       {% for server in groups['logs'] %}
       listen vmselect_egress{{ loop.index }}
         bind 127.84.81.{{ loop.index }}:8481
         http-request set-header Authorization "Basic {{
-          'victoria:' + haproxy_victoria_password) | ansible.builtin.b64encode
+          'victoria:' + haproxy_victoria_password | ansible.builtin.b64encode
         }}"
-        server {{ server }} {{ hostvars[server].ip_address }}:8481 ssl verify required ca-file "victoriametrics-ca.crt" crt "victoriametrics.crt"
+        server {{ server }} {{ hostvars[server].ip_address
+        }}:8481 ssl verify required ca-file "victoriametrics-ca.crt" crt "victoriametrics.crt"
       listen vmstorage_insert_egress{{ loop.index }}
         bind 127.84.0.{{ loop.index }}:8400
-        server {{ server }} ssl verify required ca-file "vmstorage-ca.crt" crt "vmstorage.crt"
+        server {{ server }} {{ hostvars[server].ip_address
+        }}:8400 ssl verify required ca-file "vmstorage-ca.crt" crt "vmstorage.crt"
       listen vmstorage_select_egress{{ loop.index }}
         bind 127.84.1.{{ loop.index }}:8401
-        server {{ server }} ssl verify required ca-file "vmstorage-ca.crt" crt "vmstorage.crt"
+        server {{ server }} {{ hostvars[server].ip_address
+        }}:8401 ssl verify required ca-file "vmstorage-ca.crt" crt "vmstorage.crt"
       {% endfor %}
 ...
