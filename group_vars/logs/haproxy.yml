@@ -3,6 +3,12 @@ haproxy_certs:
   victoriametrics: /etc/haproxy
   vmstorage: /etc/haproxy
 
+haproxy_victoria_password: '{{ lookup("ansible.builtin.password",
+  "secrets/haproxy_victoria_password.txt", length=26) }}'
+haproxy_victoria_password_hash: '{{ lookup("ansible.builtin.password",
+  "secrets/haproxy_victoria_password.txt", length=26,
+  encrypt="sha512_crypt") }}'
+
 # yamllint disable rule:line-length
 haproxy_config:
   # https://ssl-config.mozilla.org/ffdhe2048.txt
@@ -64,7 +70,7 @@ haproxy_config:
       userlist stats
         user stats password {{ haproxy_stats_password }}
       userlist victoriametrics
-        user victoria password {{ haproxy_victoria_password }}
+        user victoria password {{ haproxy_victoria_password_hash }}
       listen stats
         bind 127.0.0.1:7000
         bind [::1]:7000
@@ -92,10 +98,12 @@ haproxy_config:
         http-request auth unless { http_auth(victoriametrics) }
         server localhost 127.0.0.1:8482
       listen vmstorage_insert_ingress
+        mode tcp
         bind {{ ip_address
         }}:8400 ssl verify required ca-file "vmstorage-ca.crt" crt "vmstorage.crt"
         server localhost 127.0.0.1:8400
       listen vmstorage_select_ingress
+        mode tcp
         bind {{ ip_address
         }}:8401 ssl verify required ca-file "vmstorage-ca.crt" crt "vmstorage.crt"
         server localhost 127.0.0.1:8401
@@ -103,15 +111,17 @@ haproxy_config:
       listen vmselect_egress{{ loop.index }}
         bind 127.84.81.{{ loop.index }}:8481
         http-request set-header Authorization "Basic {{
-          'victoria:' + haproxy_victoria_password | ansible.builtin.b64encode
+          ('victoria:' + haproxy_victoria_password) | ansible.builtin.b64encode
         }}"
         server {{ server }} {{ hostvars[server].ip_address
         }}:8481 ssl verify required ca-file "victoriametrics-ca.crt" crt "victoriametrics.crt"
       listen vmstorage_insert_egress{{ loop.index }}
+        mode tcp
         bind 127.84.0.{{ loop.index }}:8400
         server {{ server }} {{ hostvars[server].ip_address
         }}:8400 ssl verify required ca-file "vmstorage-ca.crt" crt "vmstorage.crt"
       listen vmstorage_select_egress{{ loop.index }}
+        mode tcp
         bind 127.84.1.{{ loop.index }}:8401
         server {{ server }} {{ hostvars[server].ip_address
         }}:8401 ssl verify required ca-file "vmstorage-ca.crt" crt "vmstorage.crt"
