@@ -1,0 +1,46 @@
+---
+- name: Import certs role
+  ansible.builtin.import_role:
+    name: tls_copy
+    public: false
+  vars:
+    tls_copy_certs: '{{ victoriametrics_certs_vmagent }}'
+    tls_copy_key_owner: vmagent
+    tls_copy_notify: Restart vmagent service
+
+- name: Import certs role
+  ansible.builtin.import_role:
+    name: tls_copy
+    public: false
+  vars:
+    tls_copy_certs: '{{ victoriametrics_certs_vmalert }}'
+    tls_copy_key_owner: vmalert
+    tls_copy_notify: Restart vmalert service
+
+- name: Import certs role
+  ansible.builtin.import_role:
+    name: tls_copy
+    public: false
+  vars:
+    tls_copy_certs: '{{ victoriametrics_certs_vminsert }}'
+    tls_copy_key_owner: vminsert
+    tls_copy_notify: Restart vminsert service
+
+- name: Import certs role
+  ansible.builtin.import_role:
+    name: tls_copy
+    public: false
+  vars:
+    tls_copy_certs: '{{ victoriametrics_certs_vmselect }}'
+    tls_copy_key_owner: vmselect
+    tls_copy_notify: Restart vmselect service
+
+- name: Import certs role
+  ansible.builtin.import_role:
+    name: tls_copy
+    public: false
+  vars:
+    tls_copy_certs: '{{ victoriametrics_certs_vmstorage }}'
+    tls_copy_key_owner: vmstorage
+    tls_copy_notify: Restart vmstorage service
+...

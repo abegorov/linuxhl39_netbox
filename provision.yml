@@ -54,6 +54,8 @@
       tags: [elasticsearch]
     - role: alertmanager
       tags: [alertmanager]
+    - role: victoriametrics
+      tags: [victoriametrics]
 
 - name: Monitoring
   hosts: all

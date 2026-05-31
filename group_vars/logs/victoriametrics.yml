@@ -1,0 +1,44 @@
+---
+user_add_victoriametrics:
+  vmagent:
+  vmalert:
+  vminsert:
+  vmselect:
+  vmstorage:
+
+victoriametrics_file_groups:
+  - paths: [/etc/victoriametrics]
+    state: directory
+  - paths: [/etc/victoriametrics/vmagent]
+    state: directory
+  - paths: [/etc/victoriametrics/vmalert]
+    state: directory
+  - paths: [/etc/victoriametrics/rules]
+    state: directory
+  - paths: [/var/lib/vmagent]
+    owner: vmagent
+    group: vmagent
+    mode: '0700'
+    state: directory
+  - paths: [/var/lib/vmstorage]
+    owner: vmstorage
+    group: vmstorage
+    mode: '0700'
+    state: directory
+
+victoriametrics_unarchive:
+  victoriametrics.tar.gz:
+    checksum: >-
+      sha256:8c147592f1b847d90034219b831522465d12320d7dc0ad8f99af8e2768be0171
+    extra_opts: ['--transform=s/-prod//']
+    url: "https://github.com/VictoriaMetrics/VictoriaMetrics/releases/\
+      download/v1.144.0/victoria-metrics-linux-amd64-v1.144.0-cluster.tar.gz"
+
+victoriametrics_unarchive_utils:
+  vmutils.tar.gz:
+    checksum: >-
+      sha256:d626e58334104cdb6a9e9e1340af294e13df0deda237a7c85c622c1996346fe4
+    extra_opts: ['--transform=s/-prod//']
+    url: "https://github.com/VictoriaMetrics/VictoriaMetrics/releases/\
+      download/v1.144.0/vmutils-linux-amd64-v1.144.0.tar.gz"
+...

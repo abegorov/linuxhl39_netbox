@@ -1,0 +1,144 @@
+---
+victoriametrics_certs_vmagent:
+  alertmanager: /etc/victoriametrics/vmagent
+  victoriametrics: /etc/victoriametrics/vmagent
+
+victoriametrics_config_vmagent:
+  /etc/victoriametrics/vmagent/alertmanager.passwd:
+    owner: vmagent
+    mode: '0600'
+    content: |
+      {{ alertmanager_password }}
+  /etc/victoriametrics/vmagent/victoria.passwd:
+    owner: vmagent
+    mode: '0600'
+    content: |
+      {{ haproxy_victoria_password }}
+  /etc/victoriametrics/vmagent.yml:
+    content: |
+      global:
+        scrape_interval: 15s
+        scrape_timeout: 10s
+
+      scrape_configs:
+        - job_name: alertmanager
+          scheme: https
+          basic_auth:
+            username: alertmanager
+            password_file: /etc/victoriametrics/vmagent/alertmanager.passwd
+          tls_config:
+            ca_file: /etc/victoriametrics/vmagent/alertmanager-ca.crt
+          static_configs:
+            - targets:
+      {% for server in groups['logs'] %}
+              - {{ hostvars[server].ip_address }}:9093
+      {% endfor %}
+        - job_name: vmagent
+          scheme: https
+          basic_auth:
+            username: victoria
+            password_file: /etc/victoriametrics/vmagent/victoria.passwd
+          tls_config:
+            ca_file: /etc/victoriametrics/vmagent/victoriametrics-ca.crt
+          static_configs:
+            - targets:
+      {% for server in groups['logs'] %}
+              - {{ hostvars[server].ip_address }}:8429
+      {% endfor %}
+        - job_name: vmalert
+          scheme: https
+          basic_auth:
+            username: victoria
+            password_file: /etc/victoriametrics/vmagent/victoria.passwd
+          tls_config:
+            ca_file: /etc/victoriametrics/vmagent/victoriametrics-ca.crt
+          static_configs:
+            - targets:
+      {% for server in groups['logs'] %}
+              - {{ hostvars[server].ip_address }}:8483
+      {% endfor %}
+        - job_name: vminsert
+          scheme: https
+          basic_auth:
+            username: victoria
+            password_file: /etc/victoriametrics/vmagent/victoria.passwd
+          tls_config:
+            ca_file: /etc/victoriametrics/vmagent/victoriametrics-ca.crt
+          static_configs:
+            - targets:
+      {% for server in groups['logs'] %}
+              - {{ hostvars[server].ip_address }}:8480
+      {% endfor %}
+        - job_name: vmselect
+          scheme: https
+          basic_auth:
+            username: victoria
+            password_file: /etc/victoriametrics/vmagent/victoria.passwd
+          tls_config:
+            ca_file: /etc/victoriametrics/vmagent/victoriametrics-ca.crt
+          static_configs:
+            - targets:
+      {% for server in groups['logs'] %}
+              - {{ hostvars[server].ip_address }}:8481
+      {% endfor %}
+        - job_name: vmstorage
+          scheme: https
+          basic_auth:
+            username: victoria
+            password_file: /etc/victoriametrics/vmagent/victoria.passwd
+          tls_config:
+            ca_file: /etc/victoriametrics/vmagent/victoriametrics-ca.crt
+          static_configs:
+            - targets:
+      {% for server in groups['logs'] %}
+              - {{ hostvars[server].ip_address }}:8482
+      {% endfor %}
+  /etc/systemd/system/vmagent.service:
+    content: |
+      [Unit]
+      Description=VictoriaMetrics vmagent service
+      After=network-online.target
+      StartLimitInterval=0
+      StartLimitIntervalSec=0
+
+      [Service]
+      Type=exec
+      PIDFile=/run/vmagent.pid
+      User=vmagent
+      Group=vmagent
+      ExecReload=/bin/kill -HUP $MAINPID
+      ExecStart=/usr/local/bin/vmagent \
+        -remoteWrite.url=http://127.0.0.1:8480/insert/0/prometheus \
+        -httpListenAddr=127.0.0.1:8429 \
+        -promscrape.cluster.memberNum={{
+          groups['logs'].index(inventory_hostname) }} \
+        -promscrape.cluster.membersCount={{ groups['logs'] | length }} \
+        -promscrape.cluster.replicationFactor=2 \
+        -promscrape.config=/etc/victoriametrics/vmagent.yml \
+        -remoteWrite.maxDiskUsagePerURL=1GB  \
+        -remoteWrite.tmpDataPath=/var/lib/vmagent \
+        -sortLabels=True
+
+      SyslogIdentifier=vmagent
+      Restart=always
+      RestartSec=5
+
+      CapabilityBoundingSet=
+      LockPersonality=true
+      NoNewPrivileges=true
+      MemoryDenyWriteExecute=true
+      PrivateTmp=true
+      ProtectHome=true
+      ReadWriteDirectories=/var/lib/vmagent
+      RemoveIPC=true
+      RestrictSUIDSGID=true
+
+      PrivateUsers=true
+      ProtectControlGroups=true
+      ProtectKernelModules=true
+      ProtectKernelTunables=yes
+      ProtectSystem=strict
+
+      [Install]
+      WantedBy=multi-user.target
+...

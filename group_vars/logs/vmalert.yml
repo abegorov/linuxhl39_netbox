@@ -1,0 +1,76 @@
+---
+victoriametrics_certs_vmalert:
+  alertmanager: /etc/victoriametrics/vmalert
+
+victoriametrics_config_vmalert:
+  /etc/victoriametrics/vmalert/alertmanager.passwd:
+    owner: vmalert
+    mode: '0600'
+    content: |
+      {{ alertmanager_password }}
+  /etc/victoriametrics/rules/jobs.yml:
+    content: !unsafe |
+      groups:
+        - name: jobs
+          rules:
+            - alert: InstanceDown
+              expr: up == 0
+              labels:
+                severity: critical
+              annotations:
+                summary: Instance is down for job {{ .Labels.job }}
+                description: >-
+                  The target under job {{ .Labels.job }} is unreachable.
+  /etc/systemd/system/vmalert.service:
+    content: |
+      [Unit]
+      Description=VictoriaMetrics vmalert service
+      After=network-online.target
+      StartLimitInterval=0
+      StartLimitIntervalSec=0
+
+      [Service]
+      Type=exec
+      PIDFile=/run/vmalert.pid
+      User=vmalert
+      Group=vmalert
+      ExecReload=/bin/kill -HUP $MAINPID
+      ExecStart=/usr/local/bin/vmalert \
+        -configCheckInterval=60s \
+        -datasource.url=http://127.0.0.1:8481/select/0/prometheus \
+        -evaluationInterval=60s \
+        -external.url=https://{{ ip_address }} \
+        -httpListenAddr=127.0.0.1:8483 \
+        -notifier.basicAuth.username=alertmanager \
+        -notifier.basicAuth.passwordFile=/etc/victoriametrics/vmalert/alertmanager.passwd \
+        -notifier.tlsCAFile=/etc/victoriametrics/vmalert/alertmanager-ca.crt \
+        -notifier.url={% for server in groups['logs']
+          %}https://{{ hostvars[server].ip_address }}:9093{{
+          ',' if not loop.last else '' }}{% endfor %} \
+        -remoteRead.url=http://127.0.0.1:8481/select/0/prometheus \
+        -remoteWrite.url=http://127.0.0.1:8480/insert/0/prometheus \
+        -rule=/etc/victoriametrics/rules/*.yml  \
+        -rule.templates=/etc/victoriametrics/rules/*.tpl
+
+      SyslogIdentifier=vmalert
+      Restart=always
+      RestartSec=5
+
+      CapabilityBoundingSet=
+      LockPersonality=true
+      NoNewPrivileges=true
+      MemoryDenyWriteExecute=true
+      PrivateTmp=true
+      ProtectHome=true
+      RemoveIPC=true
+      RestrictSUIDSGID=true
+
+      PrivateUsers=true
+      ProtectControlGroups=true
+      ProtectKernelModules=true
+      ProtectKernelTunables=yes
+      ProtectSystem=strict
+
+      [Install]
+      WantedBy=multi-user.target
+...

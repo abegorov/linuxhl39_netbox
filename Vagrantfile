@@ -82,6 +82,10 @@ GROUPS = {
           :guest_ip => '  10.130.0.41', :guest => 9093,
           :host_ip  =>     '127.0.0.1', :host  => 9093,
         }, {
+          :id => 'vmagent',
+          :guest_ip => '  10.130.0.41', :guest => 8429,
+          :host_ip  =>     '127.0.0.1', :host  => 8429,
+        }, {
           :id => 'vmselect',
           :guest_ip => '  10.130.0.41', :guest => 8481,
           :host_ip  =>     '127.0.0.1', :host  => 8481,
@@ -95,6 +99,10 @@ GROUPS = {
           :guest_ip => '  10.130.0.42', :guest => 9093,
           :host_ip  =>     '127.0.0.1', :host  => 9094,
         }, {
+          :id => 'vmagent',
+          :guest_ip => '  10.130.0.42', :guest => 8429,
+          :host_ip  =>     '127.0.0.1', :host  => 8430,
+        }, {
           :id => 'vmselect',
           :guest_ip => '  10.130.0.42', :guest => 8481,
           :host_ip  =>     '127.0.0.1', :host  => 8482,
@@ -107,6 +115,10 @@ GROUPS = {
           :id => 'alertmanager',
           :guest_ip => '  10.130.0.43', :guest => 9093,
           :host_ip  =>     '127.0.0.1', :host  => 9095,
+        }, {
+          :id => 'vmagent',
+          :guest_ip => '  10.130.0.43', :guest => 8429,
+          :host_ip  =>     '127.0.0.1', :host  => 8431,
         }, {
           :id => 'vmselect',
           :guest_ip => '  10.130.0.43', :guest => 8481,
@@ -194,7 +206,7 @@ Vagrant.configure('2') do |config|
           ansible.compatibility_mode = '2.0'
           ansible.raw_arguments = ['--diff']
           # ansible.tags = ['lineinfile']
-          # ansible.tags = ['kibana']
+          # ansible.tags = ['victoriametrics']
           # ansible.tags = ['tls_ca', 'tls_certs', 'kibana']
           # ansible.skip_tags = ['apt_upgrade']
         end

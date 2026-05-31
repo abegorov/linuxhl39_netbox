@@ -2,18 +2,4 @@
 apt_packages_add_override:
   - elasticsearch
   - haproxy
-
-unarchive_urls_override:
-  victoriametrics.tar.gz:
-    checksum: >-
-      sha256:a9e3e5bd6bc9d13f17771a90e5da1b4b15469aa071d6f224c90dceefe13891f8
-    extra_opts: ['--transform=s/-prod//']
-    url: "https://github.com/VictoriaMetrics/VictoriaMetrics/releases/\
-      download/v1.142.0/victoria-metrics-linux-amd64-v1.142.0-cluster.tar.gz"
-  vmutils.tar.gz:
-    checksum: >-
-      sha256:a1e8feb08369f05346e162ffe9679182adc202d1b97fb38f4cd78751e3b48797
-    extra_opts: ['--transform=s/-prod//']
-    url: "https://github.com/VictoriaMetrics/VictoriaMetrics/releases/\
-      download/v1.142.0/vmutils-linux-amd64-v1.142.0.tar.gz"
 ...

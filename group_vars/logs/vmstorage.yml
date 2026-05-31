@@ -1,0 +1,45 @@
+---
+victoriametrics_config_vmstorage:
+  /etc/systemd/system/vmstorage.service:
+    content: |
+      [Unit]
+      Description=VictoriaMetrics vmstorage service
+      After=network-online.target
+      StartLimitInterval=0
+      StartLimitIntervalSec=0
+
+      [Service]
+      Type=exec
+      User=vmstorage
+      Group=vmstorage
+      ExecStart=/usr/local/bin/vmstorage \
+        -dedup.minScrapeInterval=10s \
+        -httpListenAddr=127.0.0.1:8482 \
+        -retentionPeriod=14d \
+        -storageDataPath=/var/lib/vmstorage/ \
+        -vminsertAddr=127.0.0.1:8400 \
+        -vmselectAddr=127.0.0.1:8401
+
+      SyslogIdentifier=vmstorage
+      Restart=always
+      RestartSec=5
+
+      CapabilityBoundingSet=
+      LockPersonality=true
+      NoNewPrivileges=true
+      MemoryDenyWriteExecute=true
+      PrivateTmp=true
+      ProtectHome=true
+      ReadWriteDirectories=/var/lib/vmstorage
+      RemoveIPC=true
+      RestrictSUIDSGID=true
+
+      PrivateUsers=true
+      ProtectControlGroups=true
+      ProtectKernelModules=true
+      ProtectKernelTunables=yes
+      ProtectSystem=strict
+
+      [Install]
+      WantedBy=multi-user.target
+...

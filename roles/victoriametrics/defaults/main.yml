@@ -1,0 +1,19 @@
+---
+victoriametrics_certs_vmagent: {}
+victoriametrics_certs_vmalert: {}
+victoriametrics_certs_vminsert: {}
+victoriametrics_certs_vmselect: {}
+victoriametrics_certs_vmstorage: {}
+victoriametrics_config_vmagent: {}
+victoriametrics_config_vmalert: {}
+victoriametrics_config_vminsert: {}
+victoriametrics_config_vmselect: {}
+victoriametrics_config_vmstorage: {}
+victoriametrics_file_groups: []
+victoriametrics_unarchive: {}
+victoriametrics_unarchive_utils: {}
+
+victoriametrics_rules: '{{ {} |
+  ansible.builtin.combine(*query("ansible.builtin.vars",
+  *query("ansible.builtin.varnames", "^victoriametrics_rules_.+"))) }}'
+...

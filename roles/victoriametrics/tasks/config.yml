@@ -1,0 +1,49 @@
+---
+- name: Import config role
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ victoriametrics_config_vmagent }}'
+    config_notify: Restart vmagent service
+
+- name: Import config role
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ victoriametrics_config_vmalert }}'
+    config_notify: Restart vmalert service
+
+- name: Import config role
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ victoriametrics_rules }}'
+    config_notify: Restart vmalert service
+
+- name: Import config role
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ victoriametrics_config_vminsert }}'
+    config_notify: Restart vminsert service
+
+- name: Import config role
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ victoriametrics_config_vmselect }}'
+    config_notify: Restart vmselect service
+
+- name: Import config role
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ victoriametrics_config_vmstorage }}'
+    config_notify: Restart vmstorage service
+...

@@ -1,0 +1,34 @@
+---
+- name: Restart vmagent service
+  ansible.builtin.systemd_service:
+    name: vmagent.service
+    state: restarted
+  ignore_errors: '{{ ansible_check_mode }}'
+
+- name: Restart vmalert service
+  ansible.builtin.systemd_service:
+    name: vmalert.service
+    state: restarted
+  ignore_errors: '{{ ansible_check_mode }}'
+
+- name: Restart vminsert service
+  ansible.builtin.systemd_service:
+    name: vminsert.service
+    state: restarted
+  throttle: 1
+  ignore_errors: '{{ ansible_check_mode }}'
+
+- name: Restart vmselect service
+  ansible.builtin.systemd_service:
+    name: vmselect.service
+    state: restarted
+  throttle: 1
+  ignore_errors: '{{ ansible_check_mode }}'
+
+- name: Restart vmstorage service
+  ansible.builtin.systemd_service:
+    name: vmstorage.service
+    state: restarted
+  throttle: 1
+  ignore_errors: '{{ ansible_check_mode }}'
+...

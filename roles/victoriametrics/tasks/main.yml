@@ -1,0 +1,41 @@
+---
+- name: Import unarchive role
+  ansible.builtin.import_role:
+    name: unarchive
+    public: false
+  vars:
+    unarchive_urls: '{{ victoriametrics_unarchive }}'
+    unarchive_notify:
+      - Restart vmstorage service
+      - Restart vminsert service
+      - Restart vmselect service
+
+- name: Import unarchive role for utils
+  ansible.builtin.import_role:
+    name: unarchive
+    public: false
+  vars:
+    unarchive_urls: '{{ victoriametrics_unarchive_utils }}'
+    unarchive_notify:
+      - Restart vmagent service
+      - Restart vmalert service
+
+- name: Import file role
+  ansible.builtin.import_role:
+    name: file
+    public: false
+  vars:
+    file_groups: '{{ victoriametrics_file_groups }}'
+
+- name: Import certs tasks
+  ansible.builtin.import_tasks: certs.yml
+
+- name: Import config tasks
+  ansible.builtin.import_tasks: config.yml
+
+- name: Import service tasks
+  ansible.builtin.import_tasks: services.yml
+
+- name: Force all notified handlers to run
+  ansible.builtin.meta: flush_handlers
+...
