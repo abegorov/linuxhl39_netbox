@@ -5,5 +5,5 @@ tls_certs_certs:
   kibana:
   patroni:
   postgresql:
-  vmselect:
+  victoriametrics:
 ...
