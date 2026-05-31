@@ -1,13 +1,18 @@
 ---
 tls_ca_certs:
+  alertmanager:
+  alertmanager-gossip:
   ceph-rgw:
   etcd:
   etcd-peer:
   elasticsearch:
   elasticsearch-transport:
+  grafana:
   kibana:
   patroni:
   postgresql:
   redis:
+  victoriametrics:
+  vmstorage:
   web:
 ...

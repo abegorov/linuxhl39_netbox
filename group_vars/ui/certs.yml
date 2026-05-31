@@ -1,5 +1,9 @@
 ---
 tls_certs_certs:
   elasticsearch:
+  grafana:
   kibana:
+  patroni:
+  postgresql:
+  vmselect:
 ...
