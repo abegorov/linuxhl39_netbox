@@ -1,0 +1,141 @@
+---
+# yaml-language-server: $schema=https://www.schemastore.org/any.json
+user_add_alertmanager:
+  alertmanager:
+
+alertmanager_certs:
+  alertmanager: /etc/alertmanager
+  alertmanager-gossip: /etc/alertmanager
+
+alertmanager_file_groups:
+  - paths: [/etc/alertmanager]
+    state: directory
+  - paths: [/var/lib/alertmanager]
+    owner: alertmanager
+    group: alertmanager
+    mode: '0700'
+    state: directory
+
+alertmanager_unarchive:
+  alertmanager.tar.gz:
+    checksum: >-
+      sha256:e3ba4a543111dd4bbf436838385cbf88108f0b128a723e61fe97d3569294ad4d
+    include: ['*/alertmanager', '*/amtool']
+    url: "https://github.com/prometheus/alertmanager/releases/download/\
+      v0.32.1/alertmanager-0.32.1.linux-amd64.tar.gz"
+
+alertmanager_password: '{{ lookup("ansible.builtin.password",
+  "secrets/alertmanager_password.txt", length=26) }}'
+alertmanager_password_hash: '{{ lookup("ansible.builtin.password",
+  "secrets/alertmanager_password.txt", length=26, encrypt="bcrypt") }}'
+
+alertmanager_email: '{{ lookup("ansible.builtin.file",
+  "secrets/alertmanager_email.txt").splitlines() }}'
+
+alertmanager_config:
+  /etc/alertmanager/gossip.yml:
+    content: |
+      tls_server_config:
+        cert_file: /etc/alertmanager/alertmanager-gossip.crt
+        key_file: /etc/alertmanager/alertmanager-gossip.key
+        client_auth_type: RequireAndVerifyClientCert
+        client_ca_file: /etc/alertmanager/alertmanager-gossip-ca.crt
+      tls_client_config:
+        ca_file: /etc/alertmanager/alertmanager-gossip-ca.crt
+        cert_file: /etc/alertmanager/alertmanager-gossip.crt
+        key_file: /etc/alertmanager/alertmanager-gossip.key
+  /etc/alertmanager/web.yml:
+    content: |
+      tls_server_config:
+        cert_file: /etc/alertmanager/alertmanager.crt
+        key_file: /etc/alertmanager/alertmanager.key
+      basic_auth_users:
+        alertmanager: '{{ alertmanager_password_hash }}'
+  /etc/alertmanager/smtp_password.txt:
+    owner: alertmanager
+    mode: '0600'
+    content: |
+      {{ alertmanager_email[2] }}
+  /etc/alertmanager/alertmanager.yml:
+    verify: amtool check-config /etc/alertmanager/alertmanager.yml
+    content: |
+      global:
+        resolve_timeout: 1m
+        smtp_from: {{ alertmanager_email[1] }}
+        smtp_hello: {{ inventory_hostname }}
+        smtp_smarthost: {{ alertmanager_email[0] }}
+        smtp_auth_username: {{ alertmanager_email[1] }}
+        smtp_auth_password_file: /etc/alertmanager/smtp_password.txt
+        smtp_require_tls: true
+
+      receivers:
+        - name: blackhole
+        - name: default
+          email_configs:
+            - to: {{ alertmanager_email[1] }}
+              send_resolved: true
+
+      route:
+        receiver: default
+        group_by:  ['severity', 'alertgroup', 'alertname', 'group', 'job']
+        group_wait: 0m
+        group_interval: 1m
+        repeat_interval: 1d
+        routes:
+          - matchers: [severity=~"critical|high|disaster"]
+            repeat_interval: 1h
+            continue: true
+
+          - matchers:
+              - severity="none"
+            receiver: blackhole
+  /etc/systemd/system/alertmanager.service:
+    content: |
+      [Unit]
+      Description=Prometheus Alertmanager
+      After=network-online.target
+      StartLimitInterval=0
+      StartLimitIntervalSec=0
+
+      [Service]
+      Type=exec
+      PIDFile=/run/alertmanager.pid
+      User=alertmanager
+      Group=alertmanager
+      ExecReload=/bin/kill -HUP $MAINPID
+      ExecStart=/usr/local/bin/alertmanager \
+        --cluster.advertise-address={{ ip_address }}:9094 \
+        --cluster.listen-address={{ ip_address }}:9094 \
+      {% for server in groups['logs'] | reject("eq", inventory_hostname) %}
+        --cluster.peer={{ hostvars[server].ip_address }}:9094 \
+      {% endfor %}
+        --cluster.tls-config=/etc/alertmanager/gossip.yml \
+        --config.file=/etc/alertmanager/alertmanager.yml \
+        --storage.path=/var/lib/alertmanager \
+        --web.config.file=/etc/alertmanager/web.yml \
+        --web.external-url=https://{{ ip_address }}:9093/ \
+        --web.listen-address={{ ip_address }}:9093
+
+      SyslogIdentifier=alertmanager
+      Restart=always
+      RestartSec=5
+
+      CapabilityBoundingSet=CAP_SET_UID
+      LockPersonality=true
+      NoNewPrivileges=true
+      MemoryDenyWriteExecute=true
+      PrivateTmp=true
+      ProtectHome=true
+      ReadWriteDirectories=/var/lib/alertmanager
+      RemoveIPC=true
+      RestrictSUIDSGID=true
+
+      PrivateUsers=true
+      ProtectControlGroups=true
+      ProtectKernelModules=true
+      ProtectKernelTunables=yes
+      ProtectSystem=strict
+
+      [Install]
+      WantedBy=multi-user.target
+...

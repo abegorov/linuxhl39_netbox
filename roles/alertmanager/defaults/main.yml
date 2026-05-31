@@ -1,0 +1,6 @@
+---
+alertmanager_certs: {}
+alertmanager_config: {}
+alertmanager_file_groups: []
+alertmanager_unarchive: {}
+...

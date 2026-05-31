@@ -4,12 +4,6 @@ apt_packages_add_override:
   - haproxy
 
 unarchive_urls_override:
-  alertmanager.tar.gz:
-    checksum: >-
-      sha256:e3ba4a543111dd4bbf436838385cbf88108f0b128a723e61fe97d3569294ad4d
-    include: ['*/alertmanager', '*/amtool']
-    url: "https://github.com/prometheus/alertmanager/releases/download/\
-      v0.32.1/alertmanager-0.32.1.linux-amd64.tar.gz"
   victoriametrics.tar.gz:
     checksum: >-
       sha256:a9e3e5bd6bc9d13f17771a90e5da1b4b15469aa071d6f224c90dceefe13891f8

@@ -1,0 +1,44 @@
+---
+- name: Import unarchive role
+  ansible.builtin.import_role:
+    name: unarchive
+    public: false
+  vars:
+    unarchive_urls: '{{ alertmanager_unarchive }}'
+    unarchive_notify: Restart alertmanager service
+
+- name: Import file role
+  ansible.builtin.import_role:
+    name: file
+    public: false
+  vars:
+    file_groups: '{{ alertmanager_file_groups }}'
+
+- name: Import certs role
+  ansible.builtin.import_role:
+    name: tls_copy
+    public: false
+  vars:
+    tls_copy_certs: '{{ alertmanager_certs }}'
+    tls_copy_key_owner: alertmanager
+    tls_copy_notify: Restart alertmanager service
+
+- name: Import config role
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ alertmanager_config }}'
+    config_notify: Restart alertmanager service
+
+- name: Enable and start alertmanager service
+  ansible.builtin.systemd_service:
+    name: alertmanager.service
+    daemon_reload: true
+    enabled: true
+    state: started
+  ignore_errors: '{{ ansible_check_mode }}'
+
+- name: Force all notified handlers to run
+  ansible.builtin.meta: flush_handlers
+...
