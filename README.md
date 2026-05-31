@@ -1,4 +1,4 @@
-# Реализация высокодоступной системы управления и инвентаризации IT-инфраструктуры на базе NetBox
+# Высокодоступный стенд NetBox, Ceph, Patroni, Redis, VictoriaMetrics, ElasticSearch, Kibana и Grafana
 
 ## Задание
 
