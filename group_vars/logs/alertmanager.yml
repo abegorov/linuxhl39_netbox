@@ -120,7 +120,7 @@ alertmanager_config:
       Restart=always
       RestartSec=5
 
-      CapabilityBoundingSet=CAP_SET_UID
+      CapabilityBoundingSet=
       LockPersonality=true
       NoNewPrivileges=true
       MemoryDenyWriteExecute=true
