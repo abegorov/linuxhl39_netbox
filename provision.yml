@@ -48,8 +48,12 @@
   become: true
   gather_facts: false
   roles:
+    - role: haproxy
+      tags: [haproxy]
     - role: elasticsearch
       tags: [elasticsearch]
+    - role: alertmanager
+      tags: [alertmanager]
 
 - name: Monitoring
   hosts: all
