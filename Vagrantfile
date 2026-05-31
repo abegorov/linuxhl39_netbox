@@ -77,12 +77,42 @@ GROUPS = {
   :logs => {
     :"#{PRJ}-logs-01" => {
       :intnets => { :"#{PRJ}" => { :ip => '10.130.0.41' }, },
+      :forwarded_ports => [{
+          :id => 'alertmanager',
+          :guest_ip => '  10.130.0.41', :guest => 9093,
+          :host_ip  =>     '127.0.0.1', :host  => 9093,
+        }, {
+          :id => 'vmselect',
+          :guest_ip => '  10.130.0.41', :guest => 8481,
+          :host_ip  =>     '127.0.0.1', :host  => 8481,
+        },
+      ],
     },
     :"#{PRJ}-logs-02" => {
       :intnets => { :"#{PRJ}" => { :ip => '10.130.0.42' }, },
+      :forwarded_ports => [{
+          :id => 'alertmanager',
+          :guest_ip => '  10.130.0.42', :guest => 9093,
+          :host_ip  =>     '127.0.0.1', :host  => 9094,
+        }, {
+          :id => 'vmselect',
+          :guest_ip => '  10.130.0.42', :guest => 8481,
+          :host_ip  =>     '127.0.0.1', :host  => 8482,
+        },
+      ],
     },
     :"#{PRJ}-logs-03" => {
       :intnets => { :"#{PRJ}" => { :ip => '10.130.0.43' }, },
+      :forwarded_ports => [{
+          :id => 'alertmanager',
+          :guest_ip => '  10.130.0.43', :guest => 9093,
+          :host_ip  =>     '127.0.0.1', :host  => 9095,
+        }, {
+          :id => 'vmselect',
+          :guest_ip => '  10.130.0.43', :guest => 8481,
+          :host_ip  =>     '127.0.0.1', :host  => 8483,
+        },
+      ],
     },
   },
   :ui => {
