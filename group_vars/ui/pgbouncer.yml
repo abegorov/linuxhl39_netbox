@@ -30,6 +30,7 @@ pgbouncer_config:
       auth_ident_file = /etc/pgbouncer/pg_ident.conf
       auth_type = hba
       default_pool_size = 20
+      ignore_startup_parameters = extra_float_digits
       listen_port = 5432
       logfile = /var/log/postgresql/pgbouncer.log
       max_client_conn = 100
