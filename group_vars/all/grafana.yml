@@ -1,0 +1,4 @@
+---
+grafana_db_password: '{{ lookup("ansible.builtin.password",
+  "secrets/grafana_db_password.txt", length=26) }}'
+...

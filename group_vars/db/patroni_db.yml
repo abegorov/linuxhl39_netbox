@@ -2,14 +2,23 @@
 patroni_db_api_endpoint: https://{{ ip_address }}:8008
 
 patroni_db_users:
+  grafana:
+    password: '{{ grafana_db_password }}'
   netbox:
     password: '{{ netbox_db_password }}'
 
 patroni_db_add:
+  grafana:
+    owner: grafana
   netbox:
     owner: netbox
 
 patroni_db_privs:
+  - login_db: grafana
+    objs: public
+    privs: CREATE
+    roles: grafana
+    type: schema
   - login_db: netbox
     objs: public
     privs: CREATE

@@ -126,6 +126,10 @@
   become: true
   gather_facts: false
   roles:
+    - role: haproxy
+      tags: [haproxy]
+    - role: pgbouncer
+      tags: [pgbouncer]
     - role: kibana
       tags: [kibana]
 ...
