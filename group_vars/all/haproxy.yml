@@ -2,6 +2,12 @@
 haproxy_stats_password: '{{ lookup("ansible.builtin.password",
   "secrets/haproxy_stats_password.txt", length=26, encrypt="sha512_crypt") }}'
 
+haproxy_victoria_password: '{{ lookup("ansible.builtin.password",
+  "secrets/haproxy_victoria_password.txt", length=26) }}'
+haproxy_victoria_password_hash: '{{ lookup("ansible.builtin.password",
+  "secrets/haproxy_victoria_password.txt", length=26,
+  encrypt="sha512_crypt") }}'
+
 haproxy_ssl_default_curves:
   - X25519
   - prime256v1

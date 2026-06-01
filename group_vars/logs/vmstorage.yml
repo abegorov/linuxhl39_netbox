@@ -13,7 +13,7 @@ victoriametrics_config_vmstorage:
       User=vmstorage
       Group=vmstorage
       ExecStart=/usr/local/bin/vmstorage \
-        -dedup.minScrapeInterval=10s \
+        -dedup.minScrapeInterval=60s \
         -httpListenAddr=127.0.0.1:8482 \
         -retentionPeriod=14d \
         -storageDataPath=/var/lib/vmstorage/ \

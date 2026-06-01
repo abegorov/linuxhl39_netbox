@@ -76,6 +76,7 @@ GROUPS = {
   },
   :logs => {
     :"#{PRJ}-logs-01" => {
+      :cpus => 4,
       :intnets => { :"#{PRJ}" => { :ip => '10.130.0.41' }, },
       :forwarded_ports => [{
           :id => 'alertmanager',
@@ -93,6 +94,7 @@ GROUPS = {
       ],
     },
     :"#{PRJ}-logs-02" => {
+      :cpus => 4,
       :intnets => { :"#{PRJ}" => { :ip => '10.130.0.42' }, },
       :forwarded_ports => [{
           :id => 'alertmanager',
@@ -110,6 +112,7 @@ GROUPS = {
       ],
     },
     :"#{PRJ}-logs-03" => {
+      :cpus => 4,
       :intnets => { :"#{PRJ}" => { :ip => '10.130.0.43' }, },
       :forwarded_ports => [{
           :id => 'alertmanager',
@@ -135,6 +138,10 @@ GROUPS = {
           :id => 'kibana',
           :guest_ip => '  10.130.0.51', :guest => 8443,
           :host_ip  =>     '127.0.0.1', :host  => 5601,
+        }, {
+          :id => 'grafana',
+          :guest_ip => '  10.130.0.51', :guest => 3000,
+          :host_ip  =>     '127.0.0.1', :host  => 3000,
         },
       ],
     },
@@ -145,6 +152,10 @@ GROUPS = {
           :id => 'kibana',
           :guest_ip => '  10.130.0.52', :guest => 8443,
           :host_ip  =>     '127.0.0.1', :host  => 5602,
+        }, {
+          :id => 'grafana',
+          :guest_ip => '  10.130.0.52', :guest => 3000,
+          :host_ip  =>     '127.0.0.1', :host  => 3001,
         },
       ],
     },
@@ -205,8 +216,8 @@ Vagrant.configure('2') do |config|
           ansible.limit = 'all'
           ansible.compatibility_mode = '2.0'
           ansible.raw_arguments = ['--diff']
-          # ansible.tags = ['lineinfile']
-          # ansible.tags = ['victoriametrics']
+          ansible.tags = ['grafana']
+          # ansible.tags = ['haproxy', 'grafana']
           # ansible.tags = ['tls_ca', 'tls_certs', 'kibana']
           # ansible.skip_tags = ['apt_upgrade']
         end

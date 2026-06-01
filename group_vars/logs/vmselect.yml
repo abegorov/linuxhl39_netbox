@@ -13,7 +13,7 @@ victoriametrics_config_vmselect:
       User=vmselect
       Group=vmselect
       ExecStart=/usr/local/bin/vmselect \
-        -dedup.minScrapeInterval=10s  \
+        -dedup.minScrapeInterval=60s  \
         -httpListenAddr=127.0.0.1:8481 \
         -replicationFactor=2 \
         -selectNode={% for _ in groups['logs']

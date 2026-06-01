@@ -3,12 +3,6 @@ haproxy_certs:
   victoriametrics: /etc/haproxy
   vmstorage: /etc/haproxy
 
-haproxy_victoria_password: '{{ lookup("ansible.builtin.password",
-  "secrets/haproxy_victoria_password.txt", length=26) }}'
-haproxy_victoria_password_hash: '{{ lookup("ansible.builtin.password",
-  "secrets/haproxy_victoria_password.txt", length=26,
-  encrypt="sha512_crypt") }}'
-
 # yamllint disable rule:line-length
 haproxy_config:
   # https://ssl-config.mozilla.org/ffdhe2048.txt
@@ -31,6 +25,7 @@ haproxy_config:
         chroot /var/lib/haproxy
         stats socket /run/haproxy/admin.sock mode 660 level admin
         stats timeout 30000
+        tune.bufsize 65536
         user haproxy
         group haproxy
         daemon
@@ -55,11 +50,13 @@ haproxy_config:
       defaults
         log     global
         mode    http
+        option http-keep-alive
         retries 2
         timeout connect 4s
+        timeout http-keep-alive 60s
         timeout client  30m
         timeout server  30m
-        timeout check   1s
+        timeout check   10s
         errorfile 400 /etc/haproxy/errors/400.http
         errorfile 403 /etc/haproxy/errors/403.http
         errorfile 408 /etc/haproxy/errors/408.http
@@ -78,23 +75,23 @@ haproxy_config:
         stats enable
         stats uri /
       listen vmagent_ingress
-        bind {{ ip_address }}:8429 ssl crt "victoriametrics.crt"
+        bind {{ ip_address }}:8429 ssl crt "victoriametrics.crt" alpn h2,http/1.1
         http-request auth unless { http_auth(victoriametrics) }
         server localhost 127.0.0.1:8429
       listen vmalert_ingress
-        bind {{ ip_address }}:8483 ssl crt "victoriametrics.crt"
+        bind {{ ip_address }}:8483 ssl crt "victoriametrics.crt" alpn h2,http/1.1
         http-request auth unless { http_auth(victoriametrics) }
         server localhost 127.0.0.1:8483
       listen vminsert_ingress
-        bind {{ ip_address }}:8480 ssl crt "victoriametrics.crt"
+        bind {{ ip_address }}:8480 ssl crt "victoriametrics.crt" alpn h2,http/1.1
         http-request auth unless { http_auth(victoriametrics) }
         server localhost 127.0.0.1:8480
       listen vmselect_ingress
-        bind {{ ip_address }}:8481 ssl crt "victoriametrics.crt"
+        bind {{ ip_address }}:8481 ssl crt "victoriametrics.crt" alpn h2,http/1.1
         http-request auth unless { http_auth(victoriametrics) }
         server localhost 127.0.0.1:8481
       listen vmstorage_ingress
-        bind {{ ip_address }}:8482 ssl crt "victoriametrics.crt"
+        bind {{ ip_address }}:8482 ssl crt "victoriametrics.crt" alpn h2,http/1.1
         http-request auth unless { http_auth(victoriametrics) }
         server localhost 127.0.0.1:8482
       listen vmstorage_insert_ingress
