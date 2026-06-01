@@ -2,8 +2,10 @@
 tls_certs_certs:
   alertmanager:
   alertmanager-gossip:
+  angie:
   elasticsearch:
   elasticsearch-transport:
+  node_exporter:
   victoriametrics:
   vmstorage:
 ...

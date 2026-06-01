@@ -1,6 +1,8 @@
 ---
 tls_certs_certs:
+  angie:
   elasticsearch:
+  node_exporter:
   patroni:
   postgresql:
   redis:

@@ -64,6 +64,8 @@
   roles:
     - role: filebeat
       tags: [filebeat]
+    - role: node_exporter
+      tags: [node_exporter]
 
 - name: Core
   hosts: core

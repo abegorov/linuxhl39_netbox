@@ -3,6 +3,7 @@ tls_certs_certs:
   elasticsearch:
   grafana:
   kibana:
+  node_exporter:
   patroni:
   postgresql:
   victoriametrics:

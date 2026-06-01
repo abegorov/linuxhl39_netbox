@@ -1,0 +1,43 @@
+---
+- name: Import unarchive role
+  ansible.builtin.import_role:
+    name: unarchive
+    public: false
+  vars:
+    unarchive_urls: '{{ node_exporter_unarchive }}'
+    unarchive_notify: Restart node_exporter service
+
+- name: Import file role
+  ansible.builtin.import_role:
+    name: file
+    public: false
+  vars:
+    file_groups: '{{ node_exporter_file_groups }}'
+
+- name: Import certs role
+  ansible.builtin.import_role:
+    name: tls_copy
+    public: false
+  vars:
+    tls_copy_certs: '{{ node_exporter_certs }}'
+    tls_copy_key_owner: node_exporter
+    tls_copy_notify: Restart node_exporter service
+
+- name: Import config role
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ node_exporter_config }}'
+    config_notify: Restart node_exporter service
+
+- name: Force all notified handlers to run
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable and start node_exporter service
+  ansible.builtin.systemd_service:
+    name: node_exporter.service
+    enabled: true
+    state: started
+  ignore_errors: '{{ ansible_check_mode }}'
+...

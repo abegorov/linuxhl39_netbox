@@ -8,6 +8,25 @@ victoriametrics_config_vmalert:
     mode: '0600'
     content: |
       {{ alertmanager_password }}
+  /etc/victoriametrics/rules/deadman-switch.yml:
+    content: !unsafe |
+      groups:
+        - name: deadman-switch
+          rules:
+            - alert: Watchdog
+              annotations:
+                summary: Алерт, который должен работать постоянно, подтверждая
+                  исправность Alertmanager
+                description: >-
+                  Этот алерт предназначен для проверки работоспособности всей
+                  цепочки оповещений. Он активен постоянно, поэтому должен
+                  всегда отображаться в Alertmanager и отправляться на
+                  принимающую сторону (receiver). Существуют интеграции с
+                  различными сервисами уведомлений, которые бьют тревогу,
+                  если этот алерт перестает приходить.
+              expr: vector(1)
+              labels:
+                severity: none
   /etc/victoriametrics/rules/jobs.yml:
     content: !unsafe |
       groups:
@@ -18,9 +37,10 @@ victoriametrics_config_vmalert:
               labels:
                 severity: critical
               annotations:
-                summary: Instance is down for job {{ .Labels.job }}
+                summary: Конечные точки задания {{ .Labels.job }} недоступны
                 description: >-
-                  The target under job {{ .Labels.job }} is unreachable.
+                  Не удалось получить метрики для одной или нескольких
+                  конечных точек задания {{ .Labels.job }}.
   /etc/systemd/system/vmalert.service:
     content: |
       [Unit]

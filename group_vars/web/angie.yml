@@ -7,6 +7,7 @@ angie_file_groups:
     mode: '0755'
 
 angie_certs:
+  angie: /etc/angie/certs
   web: /etc/angie/certs
 
 angie_access_logs:
@@ -50,8 +51,12 @@ angie_config:
       include prometheus_all.conf;
 
       server {
-        listen {{ ip_address }}:9080 default_server reuseport;
+        listen {{ ip_address }}:9080 default_server reuseport ssl;
         http2 on;
+        ssl_certificate     certs/angie.crt;
+        ssl_certificate_key certs/angie.key;
+        ssl_verify_client on;
+        ssl_client_certificate certs/angie-ca.crt;
 
         location = /metrics {
           prometheus all;

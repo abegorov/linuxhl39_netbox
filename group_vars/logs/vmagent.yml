@@ -1,6 +1,8 @@
 ---
 victoriametrics_certs_vmagent:
   alertmanager: /etc/victoriametrics/vmagent
+  angie: /etc/victoriametrics/vmagent
+  node_exporter: /etc/victoriametrics/vmagent
   victoriametrics: /etc/victoriametrics/vmagent
 
 victoriametrics_config_vmagent:
@@ -29,9 +31,31 @@ victoriametrics_config_vmagent:
           tls_config:
             ca_file: /etc/victoriametrics/vmagent/alertmanager-ca.crt
           static_configs:
-            - targets:
       {% for server in groups['logs'] %}
-              - {{ hostvars[server].ip_address }}:9093
+            - targets: ['{{ hostvars[server].ip_address }}:9093']
+              labels: { hostname: '{{ server }}' }
+      {% endfor %}
+        - job_name: angie
+          scheme: https
+          tls_config:
+            ca_file: /etc/victoriametrics/vmagent/angie-ca.crt
+            cert_file: /etc/victoriametrics/vmagent/angie.crt
+            key_file: /etc/victoriametrics/vmagent/angie.key
+          static_configs:
+      {% for server in groups['web'] %}
+            - targets: ['{{ hostvars[server].ip_address }}:9080']
+              labels: { hostname: '{{ server }}' }
+      {% endfor %}
+        - job_name: node_exporter
+          scheme: https
+          tls_config:
+            ca_file: /etc/victoriametrics/vmagent/node_exporter-ca.crt
+            cert_file: /etc/victoriametrics/vmagent/node_exporter.crt
+            key_file: /etc/victoriametrics/vmagent/node_exporter.key
+          static_configs:
+      {% for server in groups['all'] %}
+            - targets: ['{{ hostvars[server].ip_address }}:9100']
+              labels: { hostname: '{{ server }}' }
       {% endfor %}
         - job_name: vmagent
           scheme: https
@@ -41,9 +65,9 @@ victoriametrics_config_vmagent:
           tls_config:
             ca_file: /etc/victoriametrics/vmagent/victoriametrics-ca.crt
           static_configs:
-            - targets:
       {% for server in groups['logs'] %}
-              - {{ hostvars[server].ip_address }}:8429
+            - targets: ['{{ hostvars[server].ip_address }}:8429']
+              labels: { hostname: '{{ server }}' }
       {% endfor %}
         - job_name: vmalert
           scheme: https
@@ -53,9 +77,9 @@ victoriametrics_config_vmagent:
           tls_config:
             ca_file: /etc/victoriametrics/vmagent/victoriametrics-ca.crt
           static_configs:
-            - targets:
       {% for server in groups['logs'] %}
-              - {{ hostvars[server].ip_address }}:8483
+            - targets: ['{{ hostvars[server].ip_address }}:8483']
+              labels: { hostname: '{{ server }}' }
       {% endfor %}
         - job_name: vminsert
           scheme: https
@@ -65,9 +89,9 @@ victoriametrics_config_vmagent:
           tls_config:
             ca_file: /etc/victoriametrics/vmagent/victoriametrics-ca.crt
           static_configs:
-            - targets:
       {% for server in groups['logs'] %}
-              - {{ hostvars[server].ip_address }}:8480
+            - targets: ['{{ hostvars[server].ip_address }}:8480']
+              labels: { hostname: '{{ server }}' }
       {% endfor %}
         - job_name: vmselect
           scheme: https
@@ -77,9 +101,9 @@ victoriametrics_config_vmagent:
           tls_config:
             ca_file: /etc/victoriametrics/vmagent/victoriametrics-ca.crt
           static_configs:
-            - targets:
       {% for server in groups['logs'] %}
-              - {{ hostvars[server].ip_address }}:8481
+            - targets: ['{{ hostvars[server].ip_address }}:8481']
+              labels: { hostname: '{{ server }}' }
       {% endfor %}
         - job_name: vmstorage
           scheme: https
@@ -89,9 +113,9 @@ victoriametrics_config_vmagent:
           tls_config:
             ca_file: /etc/victoriametrics/vmagent/victoriametrics-ca.crt
           static_configs:
-            - targets:
       {% for server in groups['logs'] %}
-              - {{ hostvars[server].ip_address }}:8482
+            - targets: ['{{ hostvars[server].ip_address }}:8482']
+              labels: { hostname: '{{ server }}' }
       {% endfor %}
   /etc/systemd/system/vmagent.service:
     content: |

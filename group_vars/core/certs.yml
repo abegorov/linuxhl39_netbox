@@ -4,5 +4,6 @@ tls_certs_certs:
   elasticsearch:
   etcd:
   etcd-peer:
+  node_exporter:
   redis:
 ...
