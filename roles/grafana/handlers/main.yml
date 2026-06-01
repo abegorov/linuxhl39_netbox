@@ -1,0 +1,8 @@
+---
+- name: Restart grafana service
+  ansible.builtin.systemd_service:
+    name: grafana-server.service
+    daemon_reload: true
+    state: restarted
+  ignore_errors: '{{ ansible_check_mode }}'
+...

@@ -1,0 +1,8 @@
+---
+grafana_certs: {}
+grafana_config: {}
+grafana_file_groups: []
+grafana_provisioning: '{{ {} |
+  ansible.builtin.combine(*query("ansible.builtin.vars",
+  *query("ansible.builtin.varnames", "^grafana_provisioning_.+"))) }}'
+...

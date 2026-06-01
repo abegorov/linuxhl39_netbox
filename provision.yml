@@ -132,4 +132,6 @@
       tags: [pgbouncer]
     - role: kibana
       tags: [kibana]
+    - role: grafana
+      tags: [grafana]
 ...

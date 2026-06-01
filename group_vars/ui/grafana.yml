@@ -1,2 +1,54 @@
 ---
+grafana_certs:
+  grafana: /etc/grafana
+
+grafana_admin_password: '{{ lookup("ansible.builtin.password",
+  "secrets/grafana_password.txt", length=26) }}'
+
+grafana_config:
+  /etc/grafana/grafana.ini:
+    owner: grafana
+    mode: '0400'
+    content: |
+      app mode = production
+      instance_name = {{ inventory_hostname }}
+
+      [paths]
+      data = /var/lib/grafana
+      temp_data_lifetime = 24h
+      logs = /var/log/grafana
+      plugins = /var/lib/grafana/plugins
+      provisioning = /etc/grafana/provisioning
+
+      [server]
+      protocol = https
+      min_tls_version = TLS1.2
+      http_addr = {{ ip_address }}
+      http_port = 3000
+      cert_file = /etc/grafana/grafana.crt
+      cert_key = /etc/grafana/grafana.key
+
+      [database]
+      type = postgres
+      url = postgres://grafana@/grafana?host=/var/run/postgresql&port=5432&binary_parameters=yes
+
+      [security]
+      admin_user = admin
+      admin_password = {{ grafana_admin_password }}
+
+grafana_provisioning_datasource:
+  /etc/grafana/provisioning/datasources/prometheus.yml:
+    content: |
+      ---
+      apiVersion: 1
+      prune: true
+      datasources:
+        - name: prometheus
+          type: prometheus
+          access: proxy
+          uid: r7zk34nql3okg4
+          url: http://127.0.0.1:8481/select/0/prometheus
+          isDefault: true
+          editable: false
+      ...
 ...

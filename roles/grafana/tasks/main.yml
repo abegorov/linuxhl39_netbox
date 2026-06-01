@@ -1,0 +1,43 @@
+---
+- name: Import file role
+  ansible.builtin.import_role:
+    name: file
+    public: false
+  vars:
+    file_groups: '{{ grafana_file_groups }}'
+
+- name: Import certs role
+  ansible.builtin.import_role:
+    name: tls_copy
+    public: false
+  vars:
+    tls_copy_certs: '{{ grafana_certs }}'
+    tls_copy_cert_chain: true
+    tls_copy_key_owner: grafana
+    tls_copy_notify: Restart grafana service
+
+- name: Import config role
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ grafana_provisioning }}'
+
+- name: Import config role
+  ansible.builtin.import_role:
+    name: config
+    public: false
+  vars:
+    config_content: '{{ grafana_config }}'
+    config_notify: Restart grafana service
+
+- name: Force all notified handlers to run
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable and start grafana service
+  ansible.builtin.systemd_service:
+    name: grafana-server.service
+    enabled: true
+    state: started
+  ignore_errors: '{{ ansible_check_mode }}'
+...
