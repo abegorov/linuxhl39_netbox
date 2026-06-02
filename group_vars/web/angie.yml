@@ -51,6 +51,7 @@ angie_config:
       include prometheus_all.conf;
 
       server {
+        status_zone metrics;
         listen {{ ip_address }}:9080 default_server reuseport ssl;
         http2 on;
         ssl_certificate     certs/angie.crt;
@@ -65,6 +66,7 @@ angie_config:
   /etc/angie/http.d/netbox.conf:
     content: |
       upstream s3_upstream {
+        zone s3_upstream 64k;
       {% for server in groups['core'] %}
         server {{ hostvars[server].ip_address }}:443 max_fails=1 fail_timeout=10;
       {% endfor %}
@@ -73,6 +75,7 @@ angie_config:
         listen 443 default_server reuseport ssl;
         listen [::]:443 default_server reuseport ssl;
         http2 on;
+        status_zone netbox;
 
         ssl_certificate     certs/web.crt;
         ssl_certificate_key certs/web.key;
@@ -86,10 +89,12 @@ angie_config:
           proxy_set_header X-Forwarded-Proto $scheme;
           proxy_set_header X-Real-IP $remote_addr;
           rewrite ^/s3/(.*)$ /$1 break;
+          status_zone s3;
         }
 
         location /static/ {
           alias /opt/netbox/netbox/static/;
+          status_zone static;
         }
 
         location / {

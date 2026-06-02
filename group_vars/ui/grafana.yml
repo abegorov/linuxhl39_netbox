@@ -2,6 +2,13 @@
 grafana_certs:
   grafana: /etc/grafana
 
+grafana_file_groups:
+  - paths: [/var/lib/grafana/dashboards]
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
 grafana_admin_password: '{{ lookup("ansible.builtin.password",
   "secrets/grafana_password.txt", length=26) }}'
 
@@ -35,8 +42,6 @@ grafana_config:
       [security]
       admin_user = admin
       admin_password = {{ grafana_admin_password }}
-
-grafana_provisioning_datasource:
   /etc/grafana/provisioning/datasources/prometheus.yml:
     content: |
       ---
@@ -51,4 +56,39 @@ grafana_provisioning_datasource:
           isDefault: true
           editable: false
       ...
+  /etc/grafana/provisioning/dashboards/dashboards.yml:
+    content: |
+      ---
+      apiVersion: 1
+      providers:
+        - name: /var/lib/grafana/dashboards
+          orgId: 1
+          type: file
+          disableDeletion: true
+          updateIntervalSeconds: 10
+          allowUiUpdates: false
+          options:
+            path: /var/lib/grafana/dashboards
+            foldersFromFilesStructure: true
+      ...
+
+grafana_provisioning_dashboards:
+  /var/lib/grafana/dashboards/alertmanager.json:
+    content: '{{ lookup("ansible.builtin.file",
+      "dashboards/alertmanager.json") }}'
+  /var/lib/grafana/dashboards/angie.json:
+    content: '{{ lookup("ansible.builtin.file",
+      "dashboards/angie.json") }}'
+  /var/lib/grafana/dashboards/node.json:
+    content: '{{ lookup("ansible.builtin.file",
+      "dashboards/node.json") }}'
+  /var/lib/grafana/dashboards/vmagent.json:
+    content: '{{ lookup("ansible.builtin.file",
+      "dashboards/vmagent.json") }}'
+  /var/lib/grafana/dashboards/vmalert.json:
+    content: '{{ lookup("ansible.builtin.file",
+      "dashboards/vmalert.json") }}'
+  /var/lib/grafana/dashboards/vmcluster.json:
+    content: '{{ lookup("ansible.builtin.file",
+      "dashboards/vmcluster.json") }}'
 ...
