@@ -1,0 +1,75 @@
+---
+groups:
+- name: node
+  rules:
+  - alert: LoadAverage
+    expr: node_load15 >
+      count without(cpu, mode)(node_cpu_seconds_total{mode="idle"})
+    labels:
+      severity: high
+    annotations:
+      summary: Высокий Load Average (15m)
+      description: >-
+        Load Average за 15 минут больше, чем количество процессоров на
+        узле. Либо узел перегружен, либо процесы ждут IO
+      value: '{{.Value}}'
+
+  - alert: MemoryUsed
+    expr: 1 - (node_memory_MemFree_bytes + node_memory_Buffers_bytes +
+      node_memory_Cached_bytes + node_memory_SReclaimable_bytes)
+      / node_memory_MemTotal_bytes > 0.9
+    labels:
+      severity: warning
+    annotations:
+      summary: Использовано более 90% оперативной памяти
+      description: >-
+        На узле использовано более 90% оперативной памяти. Дальнейший рост
+        потребления памяти может привести к её нехватке и завершении
+        работающих процессов по OOM.
+      value: '{{.Value | humanizePercentage}}'
+
+  - alert: OOMKill
+    expr: increase(node_vmstat_oom_kill[10m]) > 0
+    labels:
+      severity: warning
+    annotations:
+      summary: Один из процессов был завершён из-за нехватки RAM
+      description: >-
+        Один из процессов на узле был завершён из-за нехватки оперативной
+        памяти (сработал OOMKill) в последние 10 минут. Либо на узле не
+        хватает памяти, либо процесс исчерпал выделенный ему (через cgroup)
+        объём.
+      value: '{{.Value}}'
+
+  - alert: FSUsage
+    expr: 1 - node_filesystem_avail_bytes/node_filesystem_size_bytes > 0.9
+    labels:
+      severity: high
+    annotations:
+      summary: На файловой системе использовано более 90% места
+      description: >-
+        На файловой системе использовано более 90% места. При исчерпании
+        свободного места запись новых данных будет невозможна.
+      value: '{{.Value | humanizePercentage}}'
+
+  - alert: InodeUsage90
+    expr: 1 - node_filesystem_files_free/node_filesystem_files > 0.9
+    labels:
+      severity: high
+    annotations:
+      summary: На файловой системе использовано более 90% inode
+      description: >-
+        На файловой системе использовано более 90% inode. При исчерпании
+        inode создание новых файлов будет невозможно.
+      value: '{{.Value | humanizePercentage}}'
+
+  - alert: FailedSystemDUnit
+    expr: node_systemd_unit_state{state="failed"} > 0
+    labels:
+      severity: critical
+    annotations:
+      summary: Юнит systemd в состоянии failed
+      description: >-
+        Юнит systemd находится в состоянии failed. Возможно, что он не может
+        запуститься из-за ошибки.
+...

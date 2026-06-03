@@ -2,45 +2,28 @@
 victoriametrics_certs_vmalert:
   alertmanager: /etc/victoriametrics/vmalert
 
+victoriametrics_rules_groups:
+  /etc/victoriametrics/rules/alertmanager.yml:
+    content: '{{ lookup("ansible.builtin.file", "alerts/alertmanager.yml") }}'
+  /etc/victoriametrics/rules/angie.yml:
+    content: '{{ lookup("ansible.builtin.file", "alerts/angie.yml") }}'
+  /etc/victoriametrics/rules/deadman-switch.yml:
+    content: '{{ lookup("ansible.builtin.file",
+      "alerts/deadman-switch.yml") }}'
+  /etc/victoriametrics/rules/jobs.yml:
+    content: '{{ lookup("ansible.builtin.file", "alerts/jobs.yml") }}'
+  /etc/victoriametrics/rules/node.yml:
+    content: '{{ lookup("ansible.builtin.file", "alerts/node.yml") }}'
+  /etc/victoriametrics/rules/victoriametrics.yml:
+    content: '{{ lookup("ansible.builtin.file",
+      "alerts/victoriametrics.yml") }}'
+
 victoriametrics_config_vmalert:
   /etc/victoriametrics/vmalert/alertmanager.passwd:
     owner: vmalert
     mode: '0600'
     content: |
       {{ alertmanager_password }}
-  /etc/victoriametrics/rules/deadman-switch.yml:
-    content: !unsafe |
-      groups:
-        - name: deadman-switch
-          rules:
-            - alert: Watchdog
-              annotations:
-                summary: Алерт, который должен работать постоянно, подтверждая
-                  исправность Alertmanager
-                description: >-
-                  Этот алерт предназначен для проверки работоспособности всей
-                  цепочки оповещений. Он активен постоянно, поэтому должен
-                  всегда отображаться в Alertmanager и отправляться на
-                  принимающую сторону (receiver). Существуют интеграции с
-                  различными сервисами уведомлений, которые бьют тревогу,
-                  если этот алерт перестает приходить.
-              expr: vector(1)
-              labels:
-                severity: none
-  /etc/victoriametrics/rules/jobs.yml:
-    content: !unsafe |
-      groups:
-        - name: jobs
-          rules:
-            - alert: InstanceDown
-              expr: up == 0
-              labels:
-                severity: critical
-              annotations:
-                summary: Конечные точки задания {{ .Labels.job }} недоступны
-                description: >-
-                  Не удалось получить метрики для одной или нескольких
-                  конечных точек задания {{ .Labels.job }}.
   /etc/systemd/system/vmalert.service:
     content: |
       [Unit]

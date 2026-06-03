@@ -1,0 +1,63 @@
+---
+# yaml-language-server: $schema=https://www.schemastore.org/any.json
+groups:
+- name: alertmanager
+  rules:
+  - alert: ConfigurationReloadFailure
+    expr: alertmanager_config_last_reload_successful != 1
+    labels:
+      severity: warning
+    annotations:
+      summary: Неверная конфигурация AlertManager
+      description: >-
+        При чтении конфигурации AlertManager произошла ошибка.
+        Необходимо проверить его корректность, в противном случае
+        AlertManager не сможет запуститься после перезапуска.
+
+  - alert: ConfigurationNotSynced
+    expr: >-
+      alertmanager_config_hash - on(role, job) group_left()
+      min by(role, job)(alertmanager_config_hash) > 0
+    labels:
+      severity: warning
+    annotations:
+      summary: Конфигурация AlertManager отличается между узлами
+      description: >-
+        Узлы  AlertManager в рамках одного кластера имеют разную конфигурацию.
+        Конфигурация должна быть одинакова на всех узлах.
+
+  - alert: InvalidAlerts
+    expr: sum without(version)
+      (increase(alertmanager_alerts_invalid_total[10m])) > 0
+    labels:
+      severity: warning
+    annotations:
+      summary: Получены алерты в неверном формате
+      description: >-
+        AlertManager не смог распознать формат полученного алерта.
+        Необходимо проверить интеграции служб, использующих AlertManager.
+      value: '{{.Value}}'
+
+  - alert: ClusterHealthScore
+    expr: alertmanager_cluster_health_score > 0
+    labels:
+      severity: critical
+    annotations:
+      summary: Кластер AlertManager не здоров
+      description: >-
+        Показатель здоровья кластера AlertManager больше 0. Это означает, что
+        существует некоторая проблема с кластером AlertManager.
+      value: '{{.Value}}'
+
+  - alert: ClusterFailedPeers
+    expr: alertmanager_cluster_failed_peers > 0
+    labels:
+      severity: critical
+    annotations:
+      summary: Некоторые узлы кластера AlertManager недоступны
+      description: >-
+        Количество недоступных узлов кластера AlertManager больше 0.
+        Это может нарушить работу кластера AlertManager и отразиться
+        на отправке алертов.
+      value: '{{.Value}}'
+...

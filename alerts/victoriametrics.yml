@@ -1,0 +1,51 @@
+---
+groups:
+- name: victoriametrics
+  rules:
+  - alert: LogErrors
+    expr: sum without(level)
+      (increase(vm_log_messages_total{level="error"}[10m])) > 0
+    labels:
+      severity: high
+    annotations:
+      summary: VictoriaMetrics логирует ошибки {{.Labels.job}}
+      description: >-
+        Сервис VictoriaMetrics, чьи метрики собираются заданием
+        {{.Labels.job}} залогировал ошибку для приложения
+        {{.Labels.app_version}}, файле {{.Labels.location}}.
+      value: '{{.Value}}'
+
+  - alert: ScrapeConfigReloadFailure
+    expr: vm_promscrape_config_last_reload_successful != 1
+    labels:
+      severity: warning
+    annotations:
+      summary: Неверная конфигурация vmagent
+      description: >-
+        При чтении конфигурации vmagent произошла ошибка.
+        Необходимо проверить его корректность, в противном случае
+        vmagent не сможет запуститься после перезапуска.
+
+  - alert: AlertConfigReloadFailure
+    expr: vmalert_config_last_reload_successful != 1
+    labels:
+      severity: warning
+    annotations:
+      summary: Неверная конфигурация vmalert
+      description: >-
+        При чтении конфигурации vmalert произошла ошибка.
+        Необходимо проверить его корректность, в противном случае
+        vmalert не сможет запуститься после перезапуска.
+
+  - alert: AlertingRulesErrors
+    expr: sum without(file, id)
+      (increase(vmalert_alerting_rules_errors_total[2m])) > 0
+    labels:
+      severity: warning
+    annotations:
+      summary: Ошибка в одном из правил алертов vmalert
+      description: >-
+        Произошло несколько ошибок при выполнении правил vmalert.
+        Необходимо исправить правило для алерта с ошибкой.
+      value: '{{.Value}}'
+...

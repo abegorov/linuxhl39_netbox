@@ -38,6 +38,7 @@ node_exporter_config:
       User=node_exporter
       Group=node_exporter
       ExecStart=/usr/local/bin/node_exporter \
+        --collector.systemd \
         --web.listen-address={{ ip_address }}:9100 \
         --web.config.file=/etc/node_exporter/web.yml
 

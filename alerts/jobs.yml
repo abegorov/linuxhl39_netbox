@@ -1,0 +1,14 @@
+---
+groups:
+  - name: jobs
+    rules:
+      - alert: InstanceDown
+        expr: up == 0
+        labels:
+          severity: high
+        annotations:
+          summary: Конечные точки задания {{ .Labels.job }} недоступны
+          description: >-
+            Не удалось получить метрики для одной или нескольких
+            конечных точек задания {{ .Labels.job }}.
+...

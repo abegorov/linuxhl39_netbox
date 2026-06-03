@@ -1,0 +1,18 @@
+---
+groups:
+- name: angie
+  rules:
+  - alert: Angie5xxErrors
+    expr: sum without(code)
+      (increase(angie_http_server_zones_responses{code=~"^5.*"}[1m])) > 0
+    keep_firing_for: 10m
+    labels:
+      severity: high
+    annotations:
+      summary: Количество ошибок сервера Angie (5xx) больше 0
+      description: >-
+        Количество ошибок сервера (с кодом 5xx) увеличилось на сервере Angie,
+        отдающим метрики задания {{.Labels.job}}. Это может говорить о
+        проблеме на сервере или backend.
+      value: '{{.Value }}'
+...
