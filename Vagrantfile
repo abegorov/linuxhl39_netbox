@@ -35,7 +35,7 @@ GROUPS = {
       :forwarded_ports => [{
           :id => 'ceph-dashboard',
           :guest_ip => '  10.130.0.11', :guest => 8443,
-          :host_ip  =>     '127.0.0.1', :host  => 8444,
+          :host_ip  =>     '127.0.0.2', :host  => 8443,
         },
       ],
     },
@@ -45,7 +45,7 @@ GROUPS = {
       :forwarded_ports => [{
           :id => 'ceph-dashboard',
           :guest_ip => '  10.130.0.11', :guest => 8443,
-          :host_ip  =>     '127.0.0.1', :host  => 8445,
+          :host_ip  =>     '127.0.0.3', :host  => 8443,
         },
       ],
     },
@@ -87,9 +87,21 @@ GROUPS = {
           :guest_ip => '  10.130.0.41', :guest => 8429,
           :host_ip  =>     '127.0.0.1', :host  => 8429,
         }, {
+          :id => 'vminsert',
+          :guest_ip => '  10.130.0.41', :guest => 8480,
+          :host_ip  =>     '127.0.0.1', :host  => 8480,
+        }, {
           :id => 'vmselect',
           :guest_ip => '  10.130.0.41', :guest => 8481,
           :host_ip  =>     '127.0.0.1', :host  => 8481,
+        }, {
+          :id => 'vmstorage',
+          :guest_ip => '  10.130.0.41', :guest => 8482,
+          :host_ip  =>     '127.0.0.1', :host  => 8482,
+        }, {
+          :id => 'vmalert',
+          :guest_ip => '  10.130.0.41', :guest => 8483,
+          :host_ip  =>     '127.0.0.1', :host  => 8483,
         },
       ],
     },
@@ -99,15 +111,27 @@ GROUPS = {
       :forwarded_ports => [{
           :id => 'alertmanager',
           :guest_ip => '  10.130.0.42', :guest => 9093,
-          :host_ip  =>     '127.0.0.1', :host  => 9094,
+          :host_ip  =>     '127.0.0.2', :host  => 9093,
         }, {
           :id => 'vmagent',
           :guest_ip => '  10.130.0.42', :guest => 8429,
-          :host_ip  =>     '127.0.0.1', :host  => 8430,
+          :host_ip  =>     '127.0.0.2', :host  => 8429,
+        }, {
+          :id => 'vminsert',
+          :guest_ip => '  10.130.0.41', :guest => 8480,
+          :host_ip  =>     '127.0.0.2', :host  => 8480,
         }, {
           :id => 'vmselect',
-          :guest_ip => '  10.130.0.42', :guest => 8481,
-          :host_ip  =>     '127.0.0.1', :host  => 8482,
+          :guest_ip => '  10.130.0.41', :guest => 8481,
+          :host_ip  =>     '127.0.0.2', :host  => 8481,
+        }, {
+          :id => 'vmstorage',
+          :guest_ip => '  10.130.0.41', :guest => 8482,
+          :host_ip  =>     '127.0.0.2', :host  => 8482,
+        }, {
+          :id => 'vmalert',
+          :guest_ip => '  10.130.0.41', :guest => 8483,
+          :host_ip  =>     '127.0.0.2', :host  => 8483,
         },
       ],
     },
@@ -117,15 +141,27 @@ GROUPS = {
       :forwarded_ports => [{
           :id => 'alertmanager',
           :guest_ip => '  10.130.0.43', :guest => 9093,
-          :host_ip  =>     '127.0.0.1', :host  => 9095,
+          :host_ip  =>     '127.0.0.3', :host  => 9093,
         }, {
           :id => 'vmagent',
           :guest_ip => '  10.130.0.43', :guest => 8429,
-          :host_ip  =>     '127.0.0.1', :host  => 8431,
+          :host_ip  =>     '127.0.0.3', :host  => 8429,
+        }, {
+          :id => 'vminsert',
+          :guest_ip => '  10.130.0.41', :guest => 8480,
+          :host_ip  =>     '127.0.0.3', :host  => 8480,
         }, {
           :id => 'vmselect',
-          :guest_ip => '  10.130.0.43', :guest => 8481,
-          :host_ip  =>     '127.0.0.1', :host  => 8483,
+          :guest_ip => '  10.130.0.41', :guest => 8481,
+          :host_ip  =>     '127.0.0.3', :host  => 8481,
+        }, {
+          :id => 'vmstorage',
+          :guest_ip => '  10.130.0.41', :guest => 8482,
+          :host_ip  =>     '127.0.0.3', :host  => 8482,
+        }, {
+          :id => 'vmalert',
+          :guest_ip => '  10.130.0.41', :guest => 8483,
+          :host_ip  =>     '127.0.0.3', :host  => 8483,
         },
       ],
     },
@@ -136,7 +172,7 @@ GROUPS = {
       :intnets => { :"#{PRJ}" => { :ip => '10.130.0.51' }, },
       :forwarded_ports => [{
           :id => 'kibana',
-          :guest_ip => '  10.130.0.51', :guest => 8443,
+          :guest_ip => '  10.130.0.51', :guest => 5601,
           :host_ip  =>     '127.0.0.1', :host  => 5601,
         }, {
           :id => 'grafana',
@@ -150,12 +186,12 @@ GROUPS = {
       :intnets => { :"#{PRJ}" => { :ip => '10.130.0.52' }, },
       :forwarded_ports => [{
           :id => 'kibana',
-          :guest_ip => '  10.130.0.52', :guest => 8443,
-          :host_ip  =>     '127.0.0.1', :host  => 5602,
+          :guest_ip => '  10.130.0.52', :guest => 5601,
+          :host_ip  =>     '127.0.0.2', :host  => 5601,
         }, {
           :id => 'grafana',
           :guest_ip => '  10.130.0.52', :guest => 3000,
-          :host_ip  =>     '127.0.0.1', :host  => 3001,
+          :host_ip  =>     '127.0.0.2', :host  => 3000,
         },
       ],
     },
@@ -216,7 +252,7 @@ Vagrant.configure('2') do |config|
           ansible.limit = 'all'
           ansible.compatibility_mode = '2.0'
           ansible.raw_arguments = ['--diff']
-          ansible.tags = ['grafana']
+          # ansible.tags = ['grafana']
           # ansible.tags = ['haproxy', 'grafana']
           # ansible.tags = ['tls_ca', 'tls_certs', 'kibana']
           # ansible.skip_tags = ['apt_upgrade']

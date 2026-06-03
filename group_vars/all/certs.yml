@@ -17,4 +17,12 @@ tls_ca_certs:
   victoriametrics:
   vmstorage:
   web:
+
+tls_certs_subject_alt_name:
+  - 'DNS:{{ inventory_hostname_short }}'
+  - 'DNS:localhost'
+  - 'IP:{{ ip_address }}'
+  - 'IP:127.0.0.1'
+  - 'IP:127.0.0.2'
+  - 'IP:127.0.0.3'
 ...
