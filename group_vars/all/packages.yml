@@ -2,10 +2,8 @@
 apt_packages_add: '{{ apt_packages_add_default + apt_packages_add_override }}'
 apt_packages_add_default:
   - bash-completion
-  - build-essential
   - chrony
   - filebeat
-  - linux-headers-generic
 apt_packages_add_override: []
 apt_packages_bootstrap: '{{ apt_packages_bootstrap_default +
   apt_packages_bootstrap_override }}'
