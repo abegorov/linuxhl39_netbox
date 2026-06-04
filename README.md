@@ -204,15 +204,15 @@ rm vagrant.box
 ❯ vagrant ssh netbox-web-01 -- -L 127.0.0.1:7000:127.0.0.1:7000
 ```
 
-[haproxy](images/haproxy.png)
+![haproxy](images/haproxy.png)
 
 Откроем **netbox** по адресу [https://192.168.56.30](https://192.168.56.30) и проверим, что файлы в S3 читаются (**netbox** хранит в **S3** изображения устройств):
 
-[netbox device types](images/netbox-device.png)
+![netbox device types](images/netbox-device.png)
 
 Загрузим пару скриптов **netbox** и выполним их:
 
-[netbox scripts](images/netbox-scripts.png)
+![netbox scripts](images/netbox-scripts.png)
 
 Из статистики **haproxy** видно, что мастером является **netbox-db-01**. мы также можем выключить по одной виртуальной машине в каждой группе. Выключим: **netbox-core-01**, **netbox-db-01** , **netbox-logs-02**, **netbox-ui-02**, **netbox-web-02**.
 
