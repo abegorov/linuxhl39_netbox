@@ -34,7 +34,7 @@ GROUPS = {
       :intnets => { :"#{PRJ}" => { :ip => '10.130.0.12' }, },
       :forwarded_ports => [{
           :id => 'ceph-dashboard',
-          :guest_ip => '  10.130.0.11', :guest => 8443,
+          :guest_ip => '  10.130.0.12', :guest => 8443,
           :host_ip  =>     '127.0.0.2', :host  => 8443,
         },
       ],
@@ -44,7 +44,7 @@ GROUPS = {
       :intnets => { :"#{PRJ}" => { :ip => '10.130.0.13' }, },
       :forwarded_ports => [{
           :id => 'ceph-dashboard',
-          :guest_ip => '  10.130.0.11', :guest => 8443,
+          :guest_ip => '  10.130.0.13', :guest => 8443,
           :host_ip  =>     '127.0.0.3', :host  => 8443,
         },
       ],
