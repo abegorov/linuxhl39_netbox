@@ -1,0 +1,127 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.0.4 Chrome/128.0.6613.186 Electron/32.2.5 Safari/537.36">
+  <diagram name="Page-1" id="s-1qvvbcadP8SC7ybe5D">
+    <mxGraphModel dx="1970" dy="668" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="nVOjsygAYyLIoLPaZymh-5" edge="1" parent="1" source="_EaJNmYskaB0vCXOgmg8-23" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="nVOjsygAYyLIoLPaZymh-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-6" edge="1" parent="1" source="_EaJNmYskaB0vCXOgmg8-23" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" target="nVOjsygAYyLIoLPaZymh-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_EaJNmYskaB0vCXOgmg8-23" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.devices.workstation;" value="client&lt;br&gt;192.168.56.1" vertex="1">
+          <mxGeometry height="56" width="53" x="356" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-7" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-1" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="nVOjsygAYyLIoLPaZymh-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-9" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-1" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" target="nVOjsygAYyLIoLPaZymh-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-14" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-1" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="nVOjsygAYyLIoLPaZymh-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-15" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-1" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="nVOjsygAYyLIoLPaZymh-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-16" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-1" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="nVOjsygAYyLIoLPaZymh-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-1" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.servers.web_server;" value="NETBOX-WEB-01&lt;br&gt;keepalived,&amp;nbsp;angie, netbox,&lt;br&gt;pgbouncer,&amp;nbsp;haproxy&lt;br&gt;VIP: 192.168.56.30&lt;br&gt;wan (eth2): 192.168.56.31&lt;br&gt;lan (eth1): 10.130.0.31" vertex="1">
+          <mxGeometry height="57" width="48" x="235" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-8" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-2" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="nVOjsygAYyLIoLPaZymh-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-10" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-2" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" target="nVOjsygAYyLIoLPaZymh-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-17" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-2" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="nVOjsygAYyLIoLPaZymh-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-18" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-2" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="nVOjsygAYyLIoLPaZymh-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-19" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-2" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="nVOjsygAYyLIoLPaZymh-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-2" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.servers.web_server;" value="NETBOX-WEB-02&lt;br&gt;keepalived,&amp;nbsp;angie, netbox,&lt;br&gt;pgbouncer,&amp;nbsp;haproxy&lt;br&gt;VIP: 192.168.56.30&lt;br&gt;wan (eth2): 192.168.56.32&lt;br&gt;lan (eth1): 10.130.0.32" vertex="1">
+          <mxGeometry height="57" width="48" x="460" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-23" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-3" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;" target="nVOjsygAYyLIoLPaZymh-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-3" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.servers.database_server;" value="NETBOX-DB-02&lt;br&gt;patroni, postgresql,&lt;br&gt;redis&lt;br&gt;10.130.0.22" vertex="1">
+          <mxGeometry height="56" width="43" x="690" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-22" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-4" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;" target="nVOjsygAYyLIoLPaZymh-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-4" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.servers.database_server;" value="NETBOX-DB-01&lt;br&gt;patroni, postgresql,&lt;br&gt;redis&lt;br&gt;10.130.0.21" vertex="1">
+          <mxGeometry height="56" width="43" x="10" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-20" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-11" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;" target="nVOjsygAYyLIoLPaZymh-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-11" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.servers.file_server;" value="NETBOX-CORE-01&lt;br&gt;ceph (rgw, mon, mgr, osd)&lt;br&gt;etcd, redis sentinel&lt;br&gt;10.130.0.11" vertex="1">
+          <mxGeometry height="56" width="45" x="190" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-21" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-12" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;" target="nVOjsygAYyLIoLPaZymh-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-12" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.servers.file_server;" value="NETBOX-CORE-02&lt;br&gt;ceph (rgw, mon, mgr, osd)&lt;br&gt;etcd, redis sentinel&lt;br&gt;10.130.0.12" vertex="1">
+          <mxGeometry height="56" width="45" x="360" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-13" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.servers.file_server;" value="NETBOX-CORE-03&lt;br&gt;ceph (rgw, mon, mgr, osd)&lt;br&gt;etcd, redis sentinel&lt;br&gt;10.130.0.13" vertex="1">
+          <mxGeometry height="56" width="45" x="538" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-29" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.servers.monitoring_sql_reporting_services;" value="NETBOX-LOGS-01&lt;br&gt;&lt;div&gt;elasticsearch, alertmanager,&lt;/div&gt;&lt;div&gt;victoriametrics, haproxy&lt;br&gt;10.130.0.41&lt;/div&gt;" vertex="1">
+          <mxGeometry height="59" width="50" x="190" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-31" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-30" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="nVOjsygAYyLIoLPaZymh-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-32" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-30" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" target="nVOjsygAYyLIoLPaZymh-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-39" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-30" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="nVOjsygAYyLIoLPaZymh-29">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-40" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-30" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="nVOjsygAYyLIoLPaZymh-37">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-41" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-30" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="nVOjsygAYyLIoLPaZymh-38">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-30" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.servers.scom;" value="NETBOX-UI-01&lt;br&gt;&lt;div&gt;kibana, grafana,&lt;/div&gt;&lt;div&gt;pgbouncer, haproxy&lt;br&gt;10.130.0.51&lt;/div&gt;" vertex="1">
+          <mxGeometry height="53" width="56" x="235" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-34" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-33" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="nVOjsygAYyLIoLPaZymh-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-35" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-33" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" target="nVOjsygAYyLIoLPaZymh-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-42" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-33" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="nVOjsygAYyLIoLPaZymh-29">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-43" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-33" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="nVOjsygAYyLIoLPaZymh-37">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-44" edge="1" parent="1" source="nVOjsygAYyLIoLPaZymh-33" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="nVOjsygAYyLIoLPaZymh-38">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-33" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.servers.scom;" value="NETBOX-UI-02&lt;br&gt;&lt;div&gt;kibana, grafana,&lt;/div&gt;&lt;div&gt;pgbouncer, haproxy&lt;br&gt;10.130.0.52&lt;/div&gt;" vertex="1">
+          <mxGeometry height="53" width="56" x="460" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-37" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.servers.monitoring_sql_reporting_services;" value="NETBOX-LOGS-02&lt;br&gt;&lt;div&gt;elasticsearch, alertmanager,&lt;/div&gt;&lt;div&gt;victoriametrics, haproxy&lt;br&gt;10.130.0.42&lt;/div&gt;" vertex="1">
+          <mxGeometry height="59" width="50" x="360" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="nVOjsygAYyLIoLPaZymh-38" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.servers.monitoring_sql_reporting_services;" value="NETBOX-LOGS-03&lt;br&gt;&lt;div&gt;elasticsearch, alertmanager,&lt;/div&gt;&lt;div&gt;victoriametrics, haproxy&lt;br&gt;10.130.0.43&lt;/div&gt;" vertex="1">
+          <mxGeometry height="59" width="50" x="538" y="700" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
