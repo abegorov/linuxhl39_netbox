@@ -218,32 +218,32 @@ rm vagrant.box
 
 Видно, что **netbox-db-01** перестал быть доступен в **haproxy** (`L7STS/503` сменилось на `L7OK`, а другой узел стал `L4TOUT`):
 
-[haproxy failure](images/haproxy-failure.png)
+![haproxy failure](images/haproxy-failure.png)
 
 Проверим работу **netbox**, это не отразилось на его работе (как и на работе S3, где находятся картинки и скрипты). **IP** адрес `192.168.56.30` переехал на **netbox-web-01**, поэтому достаточно просто обновить страницу:
 
-[netbox failure](images/netbox-failure.png)
+![netbox failure](images/netbox-failure.png)
 
 Проверим, что нам пришли алерты на отключение эти 5 узлов:
 
-[mail](images/mail.png)
+![mail](images/mail.png)
 
-[alertmanager](images/alertmanager.png)
+![alertmanager](images/alertmanager.png)
 
-[vmalert](images/vmalert.png)
+![vmalert](images/vmalert.png)
 
-[vmagent](images/vmagent.png)
+![vmagent](images/vmagent.png)
 
 Проверим логи **elasticsearch** в **kibana**:
 
-[kibana](images/kibana.png)
+![kibana](images/kibana.png)
 
 Проверим работу **grafana**:
 
-[grafana](images/grafana.png)
+![grafana](images/grafana.png)
 
 Проверим работу **ceph**:
 
-[ceph](images/ceph.png)
+![ceph](images/ceph.png)
 
 Как видно отключение этих 5 узлов не отразилось на работоспособности ни одного из запущенных сервисов.
