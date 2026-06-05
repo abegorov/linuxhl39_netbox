@@ -34,6 +34,7 @@ apt_sources_add_elastic: |
   Suites: stable
   Components: main
   Signed-By: /etc/apt/keyrings/elastic.gpg
+  Trusted: yes
 
 apt_sources_add_redis: |
   Types: deb
