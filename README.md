@@ -98,7 +98,6 @@ your_16_character_app_password
 
 Приборные панели для **grafana** находятся в директории [dashboards](dashboards).
 
-
 ## Запуск
 
 ### Запуск в Yandex Cloud

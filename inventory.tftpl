@@ -1,9 +1,8 @@
 ---
-${yamlencode(
+${yamlencode(merge(
   {
-    for group in groups :
-    group.name => {
-      vars = {
+    all = {
+      vars = merge({
         ansible_user = ssh_username
         ansible_ssh_private_key_file = ssh_key_file
         ansible_ssh_common_args = join(" ", [
@@ -12,10 +11,14 @@ ${yamlencode(
           "-o 'ProxyCommand ssh -o StrictHostKeyChecking=no",
             "-i \"${ssh_key_file}\"",
             "-l \"${ssh_username}\" -W %h:%p",
-            "${group.jumphost.network_interface.0.nat_ip_address}'"
+            "${jumphost.network_interface.0.nat_ip_address}'"
         ])
         yandex_cloud = true
-      }
+      }, vars)
+    }
+  },{
+    for group in groups :
+    group.name => {
       hosts = {
         for host in group.hosts :
         host.hostname => merge({
@@ -30,5 +33,5 @@ ${yamlencode(
       }
     }
   }
-)}
+))}
 ...
